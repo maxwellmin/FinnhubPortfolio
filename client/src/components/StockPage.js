@@ -48,6 +48,7 @@ const StockPage = () => {
   const [timeframe, setTimeframe] = useState('1D');
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('USD');
+  const [price, setPrice] = useState(2679.71);
 
   useEffect(() => {
     // Replace this with your actual API call
@@ -73,21 +74,69 @@ const StockPage = () => {
     fetchStockData();
   }, [symbol]);
 
-  const handleBuyClick = () => {
-    alert(`Buying ${amount} ${currency} of ${symbol}`);
-    // Add logic for handling buy action
+  const handleBuyClick = async () => {
+    try {
+      const transactionData = {
+        ticker: symbol,
+        transaction_type: 'BUY',
+        transaction_quantity: parseFloat(amount),
+        transaction_price: price,
+      };
+
+      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transactionData),
+      });
+
+      if (response.ok) {
+        alert('Buy transaction successful');
+        setAmount(''); // Clear the input field
+      } else {
+        const errorData = await response.json();
+        alert(`Transaction failed: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error processing buy transaction:', error);
+    }
   };
 
-  const handleSellClick = () => {
-    alert(`Selling ${amount} ${currency} of ${symbol}`);
-    // Add logic for handling sell action
+  const handleSellClick = async () => {
+    try {
+      const transactionData = {
+        ticker: symbol,
+        transaction_type: 'SELL',
+        transaction_quantity: parseFloat(amount),
+        transaction_price: price,
+      };
+
+      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transactionData),
+      });
+
+      if (response.ok) {
+        alert('Sell transaction successful');
+        setAmount(''); // Clear the input field
+      } else {
+        const errorData = await response.json();
+        alert(`Transaction failed: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error processing sell transaction:', error);
+    }
   };
 
   return (
     <Box sx={{ padding: 4, minHeight: '100vh' }}>
       {/* Stock Information Header */}
       <Typography variant="h3">{symbol}</Typography>
-      <Typography variant="h4">$2,679.71</Typography>
+      <Typography variant="h4">${price}</Typography> {/* Price is displayed */}
       <Typography variant="body1" color="error">
         -$43.12 (-1.58%) Today
       </Typography>
@@ -119,26 +168,6 @@ const StockPage = () => {
           </Button>
         ))}
       </Box>
-
-      {/* Equity and Portfolio Information */}
-      <Grid container spacing={2} sx={{ marginTop: 4 }}>
-        <Grid item xs={6}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6">Your Equity</Typography>
-            <Typography variant="h4">$4.35</Typography>
-            <Typography variant="body2">Today's Return: -$0.07 (-1.58%)</Typography>
-            <Typography variant="body2">Total Return: -$1.47 (-25.23%)</Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={6}>
-          <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6">Your average cost</Typography>
-            <Typography variant="h4">$3,583.74</Typography>
-            <Typography variant="body2">Quantity: 0.001624</Typography>
-            <Typography variant="body2">Portfolio diversity: 1.80%</Typography>
-          </Paper>
-        </Grid>
-      </Grid>
 
       {/* Trading Panel */}
       <Box sx={{ marginTop: 4 }}>
