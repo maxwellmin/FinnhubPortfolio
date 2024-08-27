@@ -1,69 +1,36 @@
-import React, { useState } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
-import Header from './components/Header';
-import BalanceDisplay from './components/BalanceDisplay';
-import InvestmentChart from './components/InvestmentChart';
-import PortfolioSummary from './components/PortfolioSummary';
+import React from 'react';
+import { Typography, Box, Paper } from '@mui/material';
+import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 
-function App() {
-  const [darkMode, setDarkMode] = useState(false);
+const data = [
+  { name: "Stocks & Options", value: 170.11, color: "#00C49F" },
+  { name: "Cryptocurrencies", value: 71.03, color: "#FFBB28" },
+  { name: "Individual Cash", value: 0.02, color: "#FF8042" }
+];
 
-  // Example data that you would fetch from an API or similar
-  const balanceData = {
-    total: '246.03',
-    todayChange: '+0.09',
-  };
-
-  const chartData = [
-    { name: 'day1', value: 240 },
-    { name: 'day2', value: 230 },
-    { name: 'day3', value: 250 },
-    { name: 'day4', value: 220 },
-    { name: 'day5', value: 290 },
-    // more data...
-  ];
-
-  const investmentItems = [
-    { name: 'ETH', shares: 0.001624, price: 2735.43 },
-    { name: 'BTC', shares: 0.00105957, price: 63702.90 },
-    // more items...
-  ];
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
-  // Create a theme based on the darkMode state
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? 'dark' : 'light',
-      background: {
-        default: darkMode ? '#121212' : '#ffffff',
-      },
-      text: {
-        primary: darkMode ? '#ffffff' : '#000000',
-      },
-    },
-  });
-
+const Portfolio = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box
-        sx={{
-          bgcolor: theme.palette.background.default,
-          color: theme.palette.text.primary,
-          minHeight: '100vh',
-          padding: 2,
-        }}
-      >
-        <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-        <BalanceDisplay total={balanceData.total} todayChange={balanceData.todayChange} />
-        <InvestmentChart data={chartData} />
-        <PortfolioSummary items={investmentItems} />
+    <Box sx={{ p: 2 }}>
+      <Typography variant="h4" component="div" gutterBottom>
+        Total Portfolio Value: $241.16
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box>
+          <Typography variant="h6" gutterBottom>Stocks & options: $170.11 (70.54%)</Typography>
+          <Typography variant="h6" gutterBottom>Cryptocurrencies: $71.03 (29.45%)</Typography>
+          <Typography variant="h6" gutterBottom>Individual cash: $0.02 (0.01%)</Typography>
+        </Box>
+        <PieChart width={400} height={400}>
+          <Pie dataKey="value" data={data} cx={200} cy={200} outerRadius={120} fill="#8884d8" label>
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip />
+        </PieChart>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
-}
+};
 
-export default App;
+export default Portfolio;

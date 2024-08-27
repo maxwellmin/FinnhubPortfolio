@@ -3,9 +3,11 @@ import { AppBar, Toolbar, Typography, Button, TextField, Box, IconButton } from 
 import SearchIcon from '@mui/icons-material/Search';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
 const Header = ({ darkMode, toggleDarkMode }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
+  const navigate = useNavigate();  // Create a navigate function
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -13,14 +15,17 @@ const Header = ({ darkMode, toggleDarkMode }) => {
 
   const handleSearch = () => {
     console.log('Searching for:', searchQuery);
+    if (searchQuery.trim()) {  // Check if searchQuery is not just whitespace
+      navigate(`/stock/${encodeURIComponent(searchQuery)}`);  // Navigate to the stock page
+    }
   };
 
   const returnHomeClick = () => {
-    alert('You are in the homepage now');
+    navigate('/');  // Use navigate to go to the homepage
   };
 
   const toPortfolio = () => {
-    alert('You are in the Portfolio page now');
+    navigate('/portfolio');  // Navigate to the Portfolio page
   };
 
   const newFeatures = () => {
