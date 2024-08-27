@@ -45,10 +45,11 @@ const StockPage = () => {
 
   //   fetchStockData();
   // }, [symbol]);
+
   const [timeframe, setTimeframe] = useState('1D');
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('USD');
-  const [price, setPrice] = useState(2679.71);
+  const [price, setPrice] = useState(100);
 
   useEffect(() => {
     // Replace this with your actual API call
@@ -81,8 +82,9 @@ const StockPage = () => {
         transaction_type: 'BUY',
         transaction_quantity: parseFloat(amount),
         transaction_price: price,
+        asset_type: 'Stock',  // Assuming all buys are stocks for now. Adjust if dynamic.
       };
-
+  
       const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
         method: 'POST',
         headers: {
@@ -90,7 +92,7 @@ const StockPage = () => {
         },
         body: JSON.stringify(transactionData),
       });
-
+  
       if (response.ok) {
         alert('Buy transaction successful');
         setAmount(''); // Clear the input field
@@ -102,7 +104,7 @@ const StockPage = () => {
       console.error('Error processing buy transaction:', error);
     }
   };
-
+  
   const handleSellClick = async () => {
     try {
       const transactionData = {
@@ -111,7 +113,7 @@ const StockPage = () => {
         transaction_quantity: parseFloat(amount),
         transaction_price: price,
       };
-
+  
       const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
         method: 'POST',
         headers: {
@@ -119,7 +121,7 @@ const StockPage = () => {
         },
         body: JSON.stringify(transactionData),
       });
-
+  
       if (response.ok) {
         alert('Sell transaction successful');
         setAmount(''); // Clear the input field
@@ -130,7 +132,7 @@ const StockPage = () => {
     } catch (error) {
       console.error('Error processing sell transaction:', error);
     }
-  };
+  };  
 
   return (
     <Box sx={{ padding: 4, minHeight: '100vh' }}>

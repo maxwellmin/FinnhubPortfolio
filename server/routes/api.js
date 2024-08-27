@@ -8,8 +8,6 @@ import axios from 'axios';
 
 const router = express.Router();
 
-
-
 // Pass the pool connection as an argument
 export default (pool) => {
   
@@ -24,86 +22,121 @@ export default (pool) => {
     }
   });
 
-  // Handle buy/sell transactions
-  router.post('/dashboard/transaction', async (req, res) => {
-    const { ticker, transaction_type, transaction_quantity, transaction_price } = req.body;
+    // Get transaction composition
+    router.get('/dashboard/transaction', async (req, res) => {
+      try {
+        const [rows] = await pool.query('SELECT * FROM transaction');
+        res.json(rows);
+      } catch (error) {
+        console.error('Error fetching transaction:', error);
+        res.status(500).json({ message: 'Failed to retrieve transaction' });
+      }
+    });
+
+  // Buy/Sell Transaction Handler
   
-    try {
-      // Step 1: Find the asset_id using the ticker
-      const [portfolioRows] = await pool.query('SELECT asset_id, quantity FROM portfolio WHERE ticker = ?', [ticker]);
-  
+router.post('/dashboard/transaction', async (req, res) => {
+  const { ticker, transaction_type, transaction_quantity, transaction_price, asset_type } = req.body;
+
+  try {
+    // Step 1: Find the portfolio entry for the given ticker
+    const [portfolioRows] = await pool.query('SELECT * FROM portfolio WHERE ticker = ?', [ticker]);
+
+    // Handle Buy Transaction
+    if (transaction_type === 'BUY') {
       if (portfolioRows.length === 0) {
-        if (transaction_type === 'BUY') {
-          // If it's a buy transaction and the ticker doesn't exist, insert it into the portfolio
-          const [result] = await pool.query(
-            'INSERT INTO portfolio (ticker, asset_type, quantity, purchase_price) VALUES (?, ?, ?, ?)',
-            [ticker, 'Stock', transaction_quantity, transaction_price]
-          );
-          const asset_id = result.insertId; // Get the newly inserted asset_id
-  
-          // Step 2: Insert the transaction with the new asset_id
-          await pool.query(
-            'INSERT INTO transaction (asset_id, ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?, ?)',
-            [asset_id, ticker, transaction_type, transaction_quantity, transaction_price]
-          );
-        } else {
-          // If it's a sell transaction but the asset doesn't exist in the portfolio
-          return res.status(400).json({ message: 'Cannot sell an asset that does not exist in the portfolio' });
-        }
-      } else {
-        const asset_id = portfolioRows[0].asset_id;
-        const currentQuantity = portfolioRows[0].quantity;
-  
-        // Step 3: Insert the transaction
+        // Case 2.2: Ticker doesn't exist in portfolio, insert a new record
+        const [insertResult] = await pool.query(
+          'INSERT INTO portfolio (ticker, asset_type, quantity, purchase_price) VALUES (?, ?, ?, ?)',
+          [ticker, asset_type, transaction_quantity, transaction_price]
+        );
+        const asset_id = insertResult.insertId; // Get the newly inserted asset_id
+
+        // Insert the transaction record
         await pool.query(
           'INSERT INTO transaction (asset_id, ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?, ?)',
           [asset_id, ticker, transaction_type, transaction_quantity, transaction_price]
         );
-  
-        // Step 4: Update the portfolio based on the transaction type
-        if (transaction_type === 'BUY') {
+        return res.status(201).json({ message: 'Buy transaction successful and new asset added to portfolio' });
+      } else {
+        // Case 2.1: Ticker exists, update the portfolio record
+        const portfolio = portfolioRows[0];
+        const asset_id = portfolio.asset_id;
+        const currentQuantity = parseFloat(portfolio.quantity);
+        const currentPurchasePrice = parseFloat(portfolio.purchase_price);
+        const currentNetWorth = currentQuantity * currentPurchasePrice;
+
+        // Calculate the new quantity and new average purchase price
+        const newQuantity = currentQuantity + transaction_quantity;
+        const newNetWorth = currentNetWorth + (transaction_quantity * transaction_price);
+        const newPurchasePrice = newNetWorth / newQuantity;
+
+        // Update the portfolio with new quantity and new purchase price
+        await pool.query(
+          'UPDATE portfolio SET quantity = ?, purchase_price = ? WHERE asset_id = ?',
+          [newQuantity, newPurchasePrice.toFixed(2), asset_id]
+        );
+
+        // Insert the transaction record
+        await pool.query(
+          'INSERT INTO transaction (asset_id, ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?, ?)',
+          [asset_id, ticker, transaction_type, transaction_quantity, transaction_price]
+        );
+
+        return res.status(201).json({ message: 'Buy transaction successful and portfolio updated' });
+      }
+    }
+
+    // Handle Sell Transaction
+    else if (transaction_type === 'SELL') {
+      if (portfolioRows.length === 0) {
+        // Case 3.2: Ticker doesn't exist in portfolio, return error
+        return res.status(400).json({ message: 'Cannot sell an asset that does not exist in the portfolio' });
+      } else {
+        // Case 3.1: Ticker exists, update the portfolio record
+        const portfolio = portfolioRows[0];
+        const asset_id = portfolio.asset_id;
+        const currentQuantity = parseFloat(portfolio.quantity);
+        const currentPurchasePrice = parseFloat(portfolio.purchase_price);
+
+        if (currentQuantity < transaction_quantity) {
+          return res.status(400).json({ message: 'Not enough quantity to sell' });
+        }
+
+        // Calculate the new quantity and new average purchase price
+        const newQuantity = currentQuantity - transaction_quantity;
+        const currentNetWorth = currentQuantity * currentPurchasePrice;
+        const sellValue = transaction_quantity * transaction_price;
+        const newNetWorth = currentNetWorth - sellValue;
+
+        const newPurchasePrice = newQuantity > 0 ? newNetWorth / newQuantity : 0;
+
+        // Update the portfolio or delete if all sold
+        if (newQuantity === 0) {
+          await pool.query('UPDATE portfolio SET quantity = ? WHERE asset_id = ?', [0, asset_id]);
+        } else {
           await pool.query(
-            'UPDATE portfolio SET quantity = quantity + ? WHERE asset_id = ?',
-            [transaction_quantity, asset_id]
-          );
-        } else if (transaction_type === 'SELL') {
-          if (currentQuantity < transaction_quantity) {
-            return res.status(400).json({ message: 'Not enough quantity to sell' });
-          }
-          await pool.query(
-            'UPDATE portfolio SET quantity = quantity - ? WHERE asset_id = ?',
-            [transaction_quantity, asset_id]
+            'UPDATE portfolio SET quantity = ?, purchase_price = ? WHERE asset_id = ?',
+            [newQuantity, newPurchasePrice.toFixed(2), asset_id]
           );
         }
+
+        // Insert the transaction record
+        await pool.query(
+          'INSERT INTO transaction (asset_id, ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?, ?)',
+          [asset_id, ticker, transaction_type, transaction_quantity, transaction_price]
+        );
+
+        return res.status(201).json({ message: 'Sell transaction successful and portfolio updated' });
       }
-  
-      res.status(201).json({ message: 'Transaction successful' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Failed to process transaction' });
+    } else {
+      return res.status(400).json({ message: 'Invalid transaction type' });
     }
-  });
-
-
-  //data from outer api 
-
-  //search框内自动填充股票ticker
-  // router.get('/api/searchutil/:keyword', async (req, res) => {
-  //   console.log(`\nSearch-utilities Call: ${req.params.keyword}`);
-  //   let origRes = await finAPI.getAutocomplete(req.params.keyword);
-  //   let msg = `${req.params.keyword} Search-utilities finished at ${Date()}\nLength of response: ${origRes['result'].length}`;
-  //   console.log(msg);
-
-  //   let origResult = origRes['result'];
-  //   console.log('origResult:', origResult)
-  //   const fillteredRes = origResult.filter(item =>
-  //       !item.symbol.includes('.') &&
-  //       item.type === "Common Stock"
-  //   );
-  //   console.log(`Length of filtered result: ${fillteredRes.length}`);
-  //   return res.send(fillteredRes);
-  // });
+  } catch (error) {
+    console.error('Error processing transaction:', error);
+    return res.status(500).json({ message: 'Failed to process transaction' });
+  }
+});
 
   return router;
-
 };
