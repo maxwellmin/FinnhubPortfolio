@@ -101,7 +101,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
         <Button color="inherit" onClick={login} sx={{ color: 'secondary.light', ml: 1 }}>
-          Log In
+          Sign In
         </Button>
       </Toolbar>
     </AppBar>

@@ -7,19 +7,26 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = (e) => {
+    e.preventDefault(); // Prevent form from submitting
     console.log('Attempting to log in with:', username, password);
     // Here you would usually handle authentication logic or call an API
-    navigate('/dashboard'); // Redirect to a dashboard or home page on successful login
+    alert('Welcome back!')
+    navigate('/'); // Redirect to a dashboard or home page on successful login
+  };
+
+  const handleRegister = () => {
+    alert('Hello New face! Welcome to our APP')
+    navigate('/'); // Redirect to a dashboard or home page on successful login
   };
 
   return (
     <Container component="main" maxWidth="xs">
       <Paper elevation={6} sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
         <Typography component="h1" variant="h5">
-          Sign in
+          Sign In 
         </Typography>
-        <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+        <Box component="form" sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -45,13 +52,20 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             onClick={handleLogin}
           >
-            Sign In
+            Log In
+          </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{ mt: 1, mb: 2 }}
+            onClick={handleRegister}
+          >
+            Register
           </Button>
         </Box>
       </Paper>
