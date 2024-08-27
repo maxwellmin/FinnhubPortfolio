@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme, CssBaseline, Box, Grid } from '@mui/material';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
@@ -10,6 +10,7 @@ import Portfolio from './components/Portfolio'; // Import the new Portfolio comp
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
+  const [investmentItems, setInvestmentItems] = useState([]);
 
   const balanceData = {
     total: '246.03',
@@ -48,6 +49,34 @@ function App() {
     { name: 'day29', value: 380 },
     { name: 'day30', value: 390 }
   ];
+<<<<<<< Updated upstream
+=======
+
+
+  // Fetch portfolio data from backend
+  useEffect(() => {
+    async function fetchPortfolioData() {
+      try {
+        const response = await fetch('http://localhost:3000/api/dashboard/portfolio');
+        const data = await response.json();
+        
+        console.log("Fetched data:", data);  // Add this to log the fetched data
+  
+        const formattedItems = data.map(item => ({
+          name: item.ticker,
+          shares: item.quantity,
+          price: item.purchase_price,
+        }));
+  
+        setInvestmentItems(formattedItems);  // Update state with fetched data
+      } catch (error) {
+        console.error('Error fetching portfolio data:', error);
+      }
+    }
+  
+    fetchPortfolioData();
+  }, []);  
+>>>>>>> Stashed changes
 
   const investmentItems = [
     { name: 'ETH', shares: 0.001624, price: 2735.43 },
@@ -90,6 +119,7 @@ function App() {
       <CssBaseline />
       <Router>
         <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+<<<<<<< Updated upstream
         <Box
           sx={{
             bgcolor: theme.palette.background.default,
@@ -141,6 +171,43 @@ function App() {
           </Routes>
         </Box>
       </Router>
+=======
+        <Grid container spacing={2} sx={{ flex: 1, padding: '16px' }}>
+          <Grid item xs={9}>
+            <Box
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: '8px',
+                padding: '16px',
+                overflowY: 'auto',
+                bgcolor: theme.palette.background.paper,
+              }}
+            >
+              <BalanceDisplay total={balanceData.total} todayChange={balanceData.todayChange} />
+              <InvestmentChart data={chartData} />
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box
+              sx={{
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: '8px',
+                padding: '16px',
+                bgcolor: theme.palette.background.paper,
+                overflowY: 'auto',
+                height: '100%',
+              }}
+            >
+              <h3>Portfolio Profile</h3>
+              <PortfolioSummary items={investmentItems} />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+>>>>>>> Stashed changes
     </ThemeProvider>
   );
 }
