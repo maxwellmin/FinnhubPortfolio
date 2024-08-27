@@ -49,9 +49,6 @@ function App() {
     { name: 'day29', value: 380 },
     { name: 'day30', value: 390 }
   ];
-<<<<<<< Updated upstream
-=======
-
 
   // Fetch portfolio data from backend
   useEffect(() => {
@@ -60,43 +57,22 @@ function App() {
         const response = await fetch('http://localhost:3000/api/dashboard/portfolio');
         const data = await response.json();
         
-        console.log("Fetched data:", data);  // Add this to log the fetched data
-  
+        console.log("Fetched data:", data);
+
         const formattedItems = data.map(item => ({
           name: item.ticker,
           shares: item.quantity,
           price: item.purchase_price,
         }));
-  
+
         setInvestmentItems(formattedItems);  // Update state with fetched data
       } catch (error) {
         console.error('Error fetching portfolio data:', error);
       }
     }
-  
-    fetchPortfolioData();
-  }, []);  
->>>>>>> Stashed changes
 
-  const investmentItems = [
-    { name: 'ETH', shares: 0.001624, price: 2735.43 },
-    { name: 'BTC', shares: 0.00105957, price: 63702.90 },
-    { name: 'AAPL', shares: 10.234, price: 145.32 },
-    { name: 'TSLA', shares: 5.67, price: 732.23 },
-    { name: 'AMZN', shares: 2.45, price: 3342.88 },
-    { name: 'GOOGL', shares: 3.89, price: 2810.92 },
-    { name: 'MSFT', shares: 8.56, price: 299.12 },
-    { name: 'NFLX', shares: 1.23, price: 527.34 },
-    { name: 'FB', shares: 4.78, price: 345.23 },
-    { name: 'NVDA', shares: 6.12, price: 226.72 },
-    { name: 'DIS', shares: 7.78, price: 178.52 },
-    { name: 'CSCO', shares: 18.45, price: 55.44 },
-    { name: 'ORCL', shares: 14.23, price: 85.92 },
-    { name: 'AMD', shares: 16.78, price: 102.34 },
-    { name: 'NFLX', shares: 1.98, price: 512.23 },
-    { name: 'SPOT', shares: 6.89, price: 238.56 },
-    { name: 'UBER', shares: 12.34, price: 42.67 },
-  ];
+    fetchPortfolioData();
+  }, []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -119,7 +95,6 @@ function App() {
       <CssBaseline />
       <Router>
         <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-<<<<<<< Updated upstream
         <Box
           sx={{
             bgcolor: theme.palette.background.default,
@@ -160,54 +135,17 @@ function App() {
                       height: '100%',
                     }}
                   >
-                    <h3>Stock List</h3>
+                    <h3>Portfolio Profile</h3>
                     <PortfolioSummary items={investmentItems} />
                   </Box>
                 </Grid>
               </Grid>
             }/>
             <Route path="/stock/:symbol" element={<StockPage />} />
-            <Route path="/portfolio" element={<Portfolio />} /> {/* New Portfolio Route */}
+            <Route path="/portfolio" element={<Portfolio />} />
           </Routes>
         </Box>
       </Router>
-=======
-        <Grid container spacing={2} sx={{ flex: 1, padding: '16px' }}>
-          <Grid item xs={9}>
-            <Box
-              sx={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                border: `1px solid ${theme.palette.divider}`,
-                borderRadius: '8px',
-                padding: '16px',
-                overflowY: 'auto',
-                bgcolor: theme.palette.background.paper,
-              }}
-            >
-              <BalanceDisplay total={balanceData.total} todayChange={balanceData.todayChange} />
-              <InvestmentChart data={chartData} />
-            </Box>
-          </Grid>
-          <Grid item xs={3}>
-            <Box
-              sx={{
-                border: `1px solid ${theme.palette.divider}`,
-                borderRadius: '8px',
-                padding: '16px',
-                bgcolor: theme.palette.background.paper,
-                overflowY: 'auto',
-                height: '100%',
-              }}
-            >
-              <h3>Portfolio Profile</h3>
-              <PortfolioSummary items={investmentItems} />
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
->>>>>>> Stashed changes
     </ThemeProvider>
   );
 }
