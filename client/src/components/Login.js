@@ -1,105 +1,61 @@
-import React, { useState } from "react";
-import http from "./http-common";
+import React, { useState } from 'react';
+import { Box, Button, TextField, Typography, Container, Paper } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-const Login = (props) => {
-  const initialUserState = {
-    id: null,
-    name: "",
-    password: "",
-  };
+const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const [user, setUser] = useState(initialUserState);
-  const [loginStatus, setLoginStatus] = useState("");
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUser({ ...user, [name]: value });
-  };
-
-  const login = () => {
-    http
-      .post(`/users/login`, {
-        userID: user.id,
-        password: user.password,
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.data[0].password_str === user.password) {
-          props.login(user.id, user.name);
-          props.history.push("/");
-        } else {
-          setLoginStatus(res.data);
-        }
-      });
-  };
-
-  const create = () => {
-    http
-      .post("/users/create", {
-        userID: user.id,
-        password: user.password,
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.data.length < 1) {
-          props.login(user.id, user.name);
-          props.history.push("/");
-        } else {
-          setLoginStatus(res.data);
-        }
-      });
+  const handleLogin = () => {
+    console.log('Attempting to log in with:', username, password);
+    // Here you would usually handle authentication logic or call an API
+    navigate('/dashboard'); // Redirect to a dashboard or home page on successful login
   };
 
   return (
-    <div className="submit-form">
-      <div>
-        <div className="form-group">
-          <label htmlFor="id">ID</label>
-          <input
-            type="number"
-            className="form-control"
-            id="id"
+    <Container component="main" maxWidth="xs">
+      <Paper elevation={6} sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
             required
-            // value={user.id}
-            onChange={handleInputChange}
-            name="id"
+            fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            autoFocus
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="user">Username</label>
-          <input
-            type="text"
-            className="form-control"
-            id="name"
-            value={user.name}
-            onChange={handleInputChange}
-            name="name"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="text"
-            className="form-control"
-            id="password"
+          <TextField
+            margin="normal"
             required
-            value={user.password}
-            onChange={handleInputChange}
+            fullWidth
             name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
-
-        <button onClick={login} className="btn btn-success">
-          Login
-        </button>
-        <button onClick={create} className="btn btn-success">
-          Create Account
-        </button>
-        <div>{loginStatus}</div>
-      </div>
-    </div>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={handleLogin}
+          >
+            Sign In
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

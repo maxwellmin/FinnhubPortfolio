@@ -32,8 +32,8 @@ const Header = ({ darkMode, toggleDarkMode }) => {
     alert('New features are coming soon');
   };
 
-  const logIn = () => {
-    alert('Log in page is coming soon');
+  const login = () => {
+    navigate('/login');
   };
 
   return (
@@ -93,7 +93,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
         <IconButton onClick={toggleDarkMode} color="inherit" sx={{ color: darkMode ? 'white' : 'black' }}>
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
-        <Button color="inherit" onClick={logIn} sx={{ color: 'secondary.light', ml: 1 }}>
+        <Button color="inherit" onClick={login} sx={{ color: 'secondary.light', ml: 1 }}>
           Log In
         </Button>
       </Toolbar>
