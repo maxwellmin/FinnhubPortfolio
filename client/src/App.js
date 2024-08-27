@@ -5,9 +5,10 @@ import Header from './components/Header';
 import BalanceDisplay from './components/BalanceDisplay';
 import InvestmentChart from './components/InvestmentChart';
 import PortfolioSummary from './components/PortfolioSummary';
-import StockPage from './components/StockPage'; // Import the StockPage component
-import Portfolio from './components/Portfolio'; // Import the new Portfolio component
-import Login from './components/Login'; // Import the new Login component
+import StockPage from './components/StockPage'; 
+import Portfolio from './components/Portfolio'; 
+import Login from './components/Login'; 
+import History from './components/History';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -144,6 +145,7 @@ function App() {
             }/>
             <Route path="/stock/:symbol" element={<StockPage />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/history" element={<History />} />
             <Route path="/login" element={<Login />} />
           </Routes>
         </Box>

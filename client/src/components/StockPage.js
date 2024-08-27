@@ -40,7 +40,7 @@ const StockPage = () => {
   };
 
   return (
-    <Box sx={{ padding: 4, color: 'black', minHeight: '100vh' }}>
+    <Box sx={{ padding: 4, minHeight: '100vh' }}>
       {/* Stock Information Header */}
       <Typography variant="h3">{symbol}</Typography>
       <Typography variant="h4">$2,679.71</Typography>
@@ -68,7 +68,7 @@ const StockPage = () => {
         {['LIVE', '1D', '1W', '1M', '3M', '1Y', '5Y'].map((tf) => (
           <Button
             key={tf}
-            sx={{ color: timeframe === tf ? '#f06595' : 'black' }}
+            sx={{ color: timeframe === tf ? '#f06595' : 'text.primary' }}
             onClick={() => setTimeframe(tf)}
           >
             {tf}
@@ -79,7 +79,7 @@ const StockPage = () => {
       {/* Equity and Portfolio Information */}
       <Grid container spacing={2} sx={{ marginTop: 4 }}>
         <Grid item xs={6}>
-          <Paper sx={{ padding: 2, color: 'black' }}>
+          <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Your Equity</Typography>
             <Typography variant="h4">$4.35</Typography>
             <Typography variant="body2">Today's Return: -$0.07 (-1.58%)</Typography>
@@ -87,7 +87,7 @@ const StockPage = () => {
           </Paper>
         </Grid>
         <Grid item xs={6}>
-          <Paper sx={{ padding: 2, color: 'black' }}>
+          <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Your average cost</Typography>
             <Typography variant="h4">$3,583.74</Typography>
             <Typography variant="body2">Quantity: 0.001624</Typography>
@@ -98,7 +98,7 @@ const StockPage = () => {
 
       {/* Trading Panel */}
       <Box sx={{ marginTop: 4 }}>
-        <Paper sx={{ padding: 3, color: 'black' }}>
+        <Paper sx={{ padding: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <FormControl fullWidth sx={{ marginBottom: 2 }}>

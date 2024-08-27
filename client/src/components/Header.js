@@ -28,6 +28,10 @@ const Header = ({ darkMode, toggleDarkMode }) => {
     navigate('/portfolio');  // Navigate to the Portfolio page
   };
 
+  const toHistory = () => {
+    navigate('/history');  // Navigate to the Portfolio page
+  };
+
   const newFeatures = () => {
     alert('New features are coming soon');
   };
@@ -85,6 +89,9 @@ const Header = ({ darkMode, toggleDarkMode }) => {
           </Button>
           <Button color="inherit" onClick={toPortfolio} sx={{ color: 'secondary.light', ml: 5 }}>
             Portfolio
+          </Button>
+          <Button color="inherit" onClick={toHistory} sx={{ color: 'secondary.light', ml: 2 }}>
+            History
           </Button>
           <Button color="inherit" onClick={newFeatures} sx={{ color: 'secondary.light', ml: 2 }}>
             Other features
