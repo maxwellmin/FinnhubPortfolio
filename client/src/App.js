@@ -7,6 +7,7 @@ import InvestmentChart from './components/InvestmentChart';
 import PortfolioSummary from './components/PortfolioSummary';
 import StockPage from './components/StockPage'; // Import the StockPage component
 import Portfolio from './components/Portfolio'; // Import the new Portfolio component
+import Login from './components/Login'; // Import the new Login component
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -50,27 +51,6 @@ function App() {
     { name: 'day30', value: 390 }
   ];
 
-<<<<<<< HEAD
-  // const investmentItems = [
-  //   { name: 'ETH', shares: 0.001624, price: 2735.43 },
-  //   { name: 'BTC', shares: 0.00105957, price: 63702.90 },
-  //   { name: 'AAPL', shares: 10.234, price: 145.32 },
-  //   { name: 'TSLA', shares: 5.67, price: 732.23 },
-  //   { name: 'AMZN', shares: 2.45, price: 3342.88 },
-  //   { name: 'GOOGL', shares: 3.89, price: 2810.92 },
-  //   { name: 'MSFT', shares: 8.56, price: 299.12 },
-  //   { name: 'NFLX', shares: 1.23, price: 527.34 },
-  //   { name: 'FB', shares: 4.78, price: 345.23 },
-  //   { name: 'NVDA', shares: 6.12, price: 226.72 },
-  //   { name: 'DIS', shares: 7.78, price: 178.52 },
-  //   { name: 'CSCO', shares: 18.45, price: 55.44 },
-  //   { name: 'ORCL', shares: 14.23, price: 85.92 },
-  //   { name: 'AMD', shares: 16.78, price: 102.34 },
-  //   { name: 'NFLX', shares: 1.98, price: 512.23 },
-  //   { name: 'SPOT', shares: 6.89, price: 238.56 },
-  //   { name: 'UBER', shares: 12.34, price: 42.67 },
-  // ];
-=======
   // Fetch portfolio data from backend
   useEffect(() => {
     async function fetchPortfolioData() {
@@ -94,7 +74,6 @@ function App() {
 
     fetchPortfolioData();
   }, []);
->>>>>>> 2812957fd8266d29e2bbb97a38b161113ba7c119
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -165,6 +144,7 @@ function App() {
             }/>
             <Route path="/stock/:symbol" element={<StockPage />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </Box>
       </Router>
