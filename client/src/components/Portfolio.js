@@ -46,13 +46,13 @@ const Portfolio = () => {
         </TableContainer>
 
         <PieChart width={300} height={300}>
-          <Pie dataKey="value" data={pieData} cx={150} cy={150} outerRadius={100} fill="#8884d8">
+          <Pie dataKey="value" data={pieData} cx={150} cy={100} outerRadius={100} fill="#8884d8">
             {pieData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip />
-          <Legend verticalAlign="bottom" height={36}/>
+          <Legend verticalAlign="bottom" height={50}/>
         </PieChart>
       </Box>
 
