@@ -50,6 +50,7 @@ function App() {
     { name: 'day30', value: 390 }
   ];
 
+<<<<<<< HEAD
   // const investmentItems = [
   //   { name: 'ETH', shares: 0.001624, price: 2735.43 },
   //   { name: 'BTC', shares: 0.00105957, price: 63702.90 },
@@ -69,6 +70,31 @@ function App() {
   //   { name: 'SPOT', shares: 6.89, price: 238.56 },
   //   { name: 'UBER', shares: 12.34, price: 42.67 },
   // ];
+=======
+  // Fetch portfolio data from backend
+  useEffect(() => {
+    async function fetchPortfolioData() {
+      try {
+        const response = await fetch('http://localhost:3000/api/dashboard/portfolio');
+        const data = await response.json();
+        
+        console.log("Fetched data:", data);
+
+        const formattedItems = data.map(item => ({
+          name: item.ticker,
+          shares: item.quantity,
+          price: item.purchase_price,
+        }));
+
+        setInvestmentItems(formattedItems);  // Update state with fetched data
+      } catch (error) {
+        console.error('Error fetching portfolio data:', error);
+      }
+    }
+
+    fetchPortfolioData();
+  }, []);
+>>>>>>> 2812957fd8266d29e2bbb97a38b161113ba7c119
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -131,14 +157,14 @@ function App() {
                       height: '100%',
                     }}
                   >
-                    <h3>Stock List</h3>
+                    <h3>Portfolio Profile</h3>
                     <PortfolioSummary items={investmentItems} />
                   </Box>
                 </Grid>
               </Grid>
             }/>
             <Route path="/stock/:symbol" element={<StockPage />} />
-            <Route path="/portfolio" element={<Portfolio />} /> {/* New Portfolio Route */}
+            <Route path="/portfolio" element={<Portfolio />} />
           </Routes>
         </Box>
       </Router>
