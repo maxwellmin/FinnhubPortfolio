@@ -1,6 +1,14 @@
 import express from "express";
 
+import * as finAPI from '../finAPI.js';
+import cors from 'cors';
+import yahooFinance from 'yahoo-finance2';
+import finnhub from 'finnhub';
+import axios from 'axios';
+
 const router = express.Router();
+
+
 
 // Pass the pool connection as an argument
 export default (pool) => {
@@ -76,5 +84,26 @@ export default (pool) => {
     }
   });
 
+
+  //data from outer api 
+
+  //search框内自动填充股票ticker
+  // router.get('/api/searchutil/:keyword', async (req, res) => {
+  //   console.log(`\nSearch-utilities Call: ${req.params.keyword}`);
+  //   let origRes = await finAPI.getAutocomplete(req.params.keyword);
+  //   let msg = `${req.params.keyword} Search-utilities finished at ${Date()}\nLength of response: ${origRes['result'].length}`;
+  //   console.log(msg);
+
+  //   let origResult = origRes['result'];
+  //   console.log('origResult:', origResult)
+  //   const fillteredRes = origResult.filter(item =>
+  //       !item.symbol.includes('.') &&
+  //       item.type === "Common Stock"
+  //   );
+  //   console.log(`Length of filtered result: ${fillteredRes.length}`);
+  //   return res.send(fillteredRes);
+  // });
+
   return router;
+
 };

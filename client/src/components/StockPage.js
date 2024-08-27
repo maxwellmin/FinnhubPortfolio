@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography, Box } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import axios from 'axios';
+
+
+const header = 'http://localhost:3000'
 
 const StockPage = () => {
   const { symbol } = useParams();
@@ -21,21 +25,45 @@ const StockPage = () => {
   // };
   
 
+  // useEffect(() => {
+  //   // Replace this with your actual API call
+  //   const fetchStockData = async () => {
+  //     // Mocked data for demonstration purposes
+  //     const mockData = [
+  //       { date: '2023-08-01', close: 145.32 },
+  //       { date: '2023-08-02', close: 146.67 },
+  //       { date: '2023-08-03', close: 144.15 },
+  //       { date: '2023-08-04', close: 148.89 },
+  //       { date: '2023-08-05', close: 150.23 },
+  //       // Add more data points as needed
+  //     ];
+
+  //     // Simulate API call delay
+  //     setTimeout(() => setStockData(mockData), 500);
+  //   };
+
+  //   fetchStockData();
+  // }, [symbol]);
+
   useEffect(() => {
     // Replace this with your actual API call
     const fetchStockData = async () => {
       // Mocked data for demonstration purposes
-      const mockData = [
-        { date: '2023-08-01', close: 145.32 },
-        { date: '2023-08-02', close: 146.67 },
-        { date: '2023-08-03', close: 144.15 },
-        { date: '2023-08-04', close: 148.89 },
-        { date: '2023-08-05', close: 150.23 },
-        // Add more data points as needed
-      ];
+      try {
+        const response = await axios.get(`${header}/fin/yahoo1/historical/${symbol}`, {
+          params: {
+            range: '1y', // You can adjust the range as needed
+            interval: '1d', // You can adjust the interval as needed
+          },
+        });
+        console.log("type of response: ", typeof(response.data),response.data)
 
-      // Simulate API call delay
-      setTimeout(() => setStockData(mockData), 500);
+        setStockData(response.data);
+      } catch (error) {
+        console.error('Error fetching stock data:', error);
+      }
+
+
     };
 
     fetchStockData();
