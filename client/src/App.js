@@ -7,6 +7,7 @@ import InvestmentChart from './components/InvestmentChart';
 import PortfolioSummary from './components/PortfolioSummary';
 import StockPage from './components/StockPage'; // Import the StockPage component
 import Portfolio from './components/Portfolio'; // Import the new Portfolio component
+import Login from './components/Login'; // Import the new Login component
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -143,6 +144,7 @@ function App() {
             }/>
             <Route path="/stock/:symbol" element={<StockPage />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </Box>
       </Router>
