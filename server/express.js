@@ -99,7 +99,7 @@ app.get('/fin/news/:keyword', async (req, res) => {
   let array = [];
 
   for (let i = 0; i < a.length; i++) {
-      if (a[i]["category"] && a[i]["datetime"] && a[i]["headline"] && a[i]["id"] && a[i]["image"] && a[i]["related"] && a[i]["source"] && a[i]["summary"] && a[i]["url"] && count < 20) {
+      if (a[i]["category"] && a[i]["datetime"] && a[i]["headline"] && a[i]["id"] && a[i]["image"] && a[i]["related"] && a[i]["source"] && a[i]["summary"] && a[i]["url"] && count < 5) {
           count += 1;
           array.push(a[i]);
       }
