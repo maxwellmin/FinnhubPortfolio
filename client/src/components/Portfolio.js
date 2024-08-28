@@ -23,15 +23,17 @@ const Portfolio = () => {
         const updatedData = await Promise.all(data.map(async (item) => {
           const companyResponse = await fetch(`http://localhost:3000/fin/companydesp/${item.ticker}`);
           const companyData = await companyResponse.json();
-          
+          const priceResponse = await fetch(`http://localhost:3000/fin/latestprice/${item.ticker}`);
+          const stockPrice = await priceResponse.json();
+
           return {
-            name: companyData.name || "N/A",  // Use the fetched company name
-            symbol: item.ticker || "N/A", 
-            shares: item.quantity || "N/A", 
-            price: "$" + (item.current_price || "N/A"), 
-            avgCost: "$" + (item.purchase_price || "N/A"), 
-            return: item.unrealized_return || "N/A", 
-            equity: "$" + (item.net_worth || "N/A")
+            assetName: companyData.name || "N/A",  // Use the fetched company name
+            ticker: item.ticker,
+            quantityHeld: item.quantity,
+            currentPrice: "$" + (stockPrice.c || "N/A"),
+            marketValue: "$" + (item.quantity * stockPrice.c || "N/A"),
+            avgCost: "$" + (item.purchase_price || "N/A"),
+            return: (item.quantity * stockPrice.c - item.net_worth) / (item.net_worth) * 100
           };
         }));
 
@@ -81,7 +83,7 @@ const Portfolio = () => {
             ))}
           </Pie>
           <Tooltip />
-          <Legend verticalAlign="bottom" height={50}/>
+          <Legend verticalAlign="bottom" height={50} />
         </PieChart>
       </Box>
 
@@ -101,13 +103,18 @@ const Portfolio = () => {
           <TableBody>
             {stocksData.map((row, index) => (
               <TableRow key={index}>
-                <TableCell>{row.name}</TableCell>
-                <TableCell align="right">{row.symbol}</TableCell>
-                <TableCell align="right">{row.shares}</TableCell>
-                <TableCell align="right">{row.price}</TableCell>
-                <TableCell align="right">{row.equity}</TableCell>
+                <TableCell>{row.assetName}</TableCell>
+                <TableCell align="right">{row.ticker}</TableCell>
+                <TableCell align="right">{row.quantityHeld}</TableCell>
+                <TableCell align="right">{row.currentPrice}</TableCell>
+                <TableCell align="right">{row.marketValue}</TableCell>
                 <TableCell align="right">{row.avgCost}</TableCell>
-                <TableCell align="right">{row.return >= 0 ? `↑ $${row.return.toFixed(2)}` : `↓ $${Math.abs(row.return).toFixed(2)}`}</TableCell>
+                <TableCell align="right">
+                  {row.return >= 0
+                    ? `↑ ${row.return.toFixed(2)}%`
+                    : `↓ ${row.return.toFixed(2)}%`}
+                </TableCell>
+
               </TableRow>
             ))}
           </TableBody>

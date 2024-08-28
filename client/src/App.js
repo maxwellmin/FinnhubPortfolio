@@ -51,7 +51,7 @@ function App() {
     { name: 'day27', value: 360 },
     { name: 'day28', value: 370 },
     { name: 'day29', value: 380 },
-    { name: 'day30', value: 390 }
+    { name: 'day30', value: 3000 }
   ];
 
   // Fetch portfolio data from backend
