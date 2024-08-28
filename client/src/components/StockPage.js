@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Typography, Box, Button, Grid, Paper, TextField, Select, MenuItem, FormControl } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { color, padding } from '@mui/system';
 
 
 const header = 'http://localhost:3000'
@@ -10,6 +11,15 @@ const header = 'http://localhost:3000'
 const StockPage = () => {
   const { symbol } = useParams();
   const [stockData, setStockData] = useState([]);
+  const [timeframe, setTimeframe] = useState('1D');
+  const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState('USD');
+  const [currentPrice, setCurrentPrice] = useState(null);
+  const [changePrice, setChangePrice] = useState(null);
+  const [changePercentPrice, setChangePercentPrice] = useState(null);
+  const [stockName, setStockName] = useState(null);
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [webUrl, setWebUrl] = useState(null);
 
 
 
@@ -26,6 +36,7 @@ const StockPage = () => {
   // };
   
 
+<<<<<<< Updated upstream
   // useEffect(() => {
   //   // Replace this with your actual API call
   //   const fetchStockData = async () => {
@@ -50,6 +61,8 @@ const StockPage = () => {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [price, setPrice] = useState(100);
+=======
+>>>>>>> Stashed changes
 
   useEffect(() => {
     // Replace this with your actual API call
@@ -68,11 +81,34 @@ const StockPage = () => {
       } catch (error) {
         console.error('Error fetching stock data:', error);
       }
+    };
 
+    const fetchCurrentPrice = async () => {
+      try {
+        const response = await axios.get(`${header}/fin/latestprice/${symbol}`);
+        setCurrentPrice(response.data.c); // Assuming the API returns the price as 'price'
+        setChangePrice(response.data.d);
+        setChangePercentPrice(response.data.dp);
+        
+      } catch (error) {
+        console.error('Error fetching current price:', error);
+      }
+    };
 
+    const fetchDescription = async () => {
+      try {
+        const response = await axios.get(`${header}/fin/companydesp/${symbol}`);
+        setStockName(response.data.name); 
+        setLogoUrl(response.data.logo)
+        setWebUrl(response.data.weburl)
+      } catch (error) {
+        console.error('Error fetching current price:', error);
+      }
     };
 
     fetchStockData();
+    fetchCurrentPrice();
+    fetchDescription();
   }, [symbol]);
 
   const handleBuyClick = async () => {
@@ -136,12 +172,43 @@ const StockPage = () => {
 
   return (
     <Box sx={{ padding: 4, minHeight: '100vh' }}>
+<<<<<<< Updated upstream
       {/* Stock Information Header */}
       <Typography variant="h3">{symbol}</Typography>
       <Typography variant="h4">${price}</Typography> {/* Price is displayed */}
       <Typography variant="body1" color="error">
         -$43.12 (-1.58%) Today
       </Typography>
+=======
+      <Grid container alignItems="center" justifyContent="space-between" style={{marginBottom:"30px"}}>
+        <Grid item xs={5}>
+          {/* Stock Information Header */}
+          <Typography variant="h3">{symbol}</Typography>
+          <Typography variant="h5" style={{ color: 'grey' }}> {stockName !== null ? `${stockName}` : 'Loading...'}</Typography>
+          <Typography variant="h4" style={{ color: changePrice < 0 ? 'red' : 'green' }}>
+            {currentPrice !== null ? `$${currentPrice.toFixed(2)}` : 'Loading...'}
+          </Typography>
+          <Typography variant="body1" style={{ color: changePrice < 0 ? 'red' : 'green' }}>
+            {changePrice !== null && changePercentPrice !== null
+              ? `${changePrice < 0 ? '-' : '+'}$${Math.abs(changePrice)} (${changePercentPrice < 0 ? '-' : '+'}${Math.abs(changePercentPrice.toFixed(2))}%) Today`
+              : 'Loading...'}
+          </Typography>
+        </Grid>
+        <Grid item xs={1}>
+        {logoUrl ? (
+          <a href={`${webUrl}`} target="_blank" rel="noopener noreferrer">
+            <img
+              src={logoUrl}  // Use the actual image URL
+              alt={`${symbol} logo`}
+              style={{ width: '100%', maxWidth: '200px', maxHeight: '200px' }}
+            />
+          </a>
+        ) : (
+          <Typography variant="body1">Loading...</Typography>
+        )}
+        </Grid>
+      </Grid>
+>>>>>>> Stashed changes
 
       {/* Chart Section */}
       {stockData.length > 0 ? (
@@ -151,7 +218,7 @@ const StockPage = () => {
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="close" stroke="#f06595" activeDot={{ r: 8 }} />
+            <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336': '#4caf50'} activeDot={{ r: 8 }} />
           </LineChart>
         </ResponsiveContainer>
       ) : (
