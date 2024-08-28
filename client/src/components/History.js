@@ -1,63 +1,102 @@
-import React from 'react';
-import { Typography, Box, Grid, Paper, Select, MenuItem, FormControl, InputLabel, Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Typography, Box, Grid, Paper, List, ListItem, ListItemText, ListItemSecondaryAction, TextField, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
+import { format } from 'date-fns';
 
 const History = () => {
-  const transactions = [
-    { date: 'Jul 15', description: 'Deposit to individual account from HSBC', amount: '+$5.00' },
-    { date: 'Jul 15', description: 'Deposit to individual account from HSBC', amount: '+$10.00' },
-    { date: 'Jul 15', description: 'Deposit to individual account from HSBC', amount: '+$10.00' },
-    { date: 'Jul 15', description: 'Deposit to individual account from HSBC', amount: '+$20.00' },
-    // Add more transactions as needed
-  ];
+  const [transactions, setTransaction] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [typeFilter, setTypeFilter] = useState('');
+  const [tickerFilter, setTickerFilter] = useState('');
+  const [tickers, setTickers] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/dashboard/transaction")
+      .then(response => response.json())
+      .then(data => {
+        // Sort transactions by time (newest first)
+        const sortedTransactions = data.sort((a, b) => new Date(b.transaction_time) - new Date(a.transaction_time));
+        setTransaction(sortedTransactions);
+
+        // Extract unique tickers for filter options
+        const uniqueTickers = [...new Set(sortedTransactions.map(t => t.ticker))];
+        setTickers(uniqueTickers);
+      })
+      .catch(error => console.error("error fetching", error));
+  }, []);
+
+  useEffect(() => {
+    // Apply filters
+    let result = [...transactions];
+    if (typeFilter) {
+      result = result.filter(transaction => transaction.transaction_type === typeFilter);
+    }
+    if (tickerFilter) {
+      result = result.filter(transaction => transaction.ticker === tickerFilter);
+    }
+    setFilteredTransactions(result);
+  }, [typeFilter, tickerFilter, transactions]);
 
   return (
     <Box sx={{ padding: 10, minHeight: '100vh' }}>
-      {/* Page Header */}
-      <Typography variant="h4" sx={{ marginBottom: 4 }}>User Name</Typography>
+      <Typography variant="h4" sx={{ marginBottom: 4 }}>
+        User Name
+      </Typography>
 
       <Grid container spacing={4}>
-        {/* Transaction List */}
-        <Grid item xs={8}>
-          {transactions.map((transaction, index) => (
-            <Paper key={index} sx={{ padding: 2, marginBottom: 2 }}>
-              <Typography variant="body1">{transaction.description}</Typography>
-              <Typography variant="body2" color="textSecondary">{transaction.date}</Typography>
-              <Typography variant="h6" sx={{ textAlign: 'right', color: transaction.amount.startsWith('+') ? 'green' : 'inherit' }}>
-                {transaction.amount}
-              </Typography>
-              {transaction.details && <Typography variant="body2" color="textSecondary">{transaction.details}</Typography>}
-            </Paper>
-          ))}
+        <Grid item xs={12} md={6} sx={{ marginBottom: 2 }}>
+          <FormControl fullWidth>
+            <InputLabel>Type</InputLabel>
+            <Select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              label="Type"
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="BUY">Buy</MenuItem>
+              <MenuItem value="SELL">Sell</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        
+        <Grid item xs={12} md={6} sx={{ marginBottom: 2 }}>
+          <FormControl fullWidth>
+            <InputLabel>Ticker</InputLabel>
+            <Select
+              value={tickerFilter}
+              onChange={(e) => setTickerFilter(e.target.value)}
+              label="Ticker"
+            >
+              <MenuItem value="">All</MenuItem>
+              {tickers.map((ticker, index) => (
+                <MenuItem key={index} value={ticker}>{ticker}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
 
-        {/* Refine Results Section */}
-        {/* <Grid item xs={4}>
-          <Paper sx={{ padding: 3 }}>
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>Refine Results</Typography>
-            <FormControl fullWidth sx={{ marginBottom: 2 }}>
-              <InputLabel>Account</InputLabel>
-              <Select defaultValue="All">
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Savings">Savings</MenuItem>
-                <MenuItem value="Checking">Checking</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth sx={{ marginBottom: 2 }}>
-              <InputLabel>Type</InputLabel>
-              <Select defaultValue="All">
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Deposit">Deposit</MenuItem>
-                <MenuItem value="Withdrawal">Withdrawal</MenuItem>
-                <MenuItem value="Purchase">Purchase</MenuItem>
-              </Select>
-            </FormControl>
-
-            <Button fullWidth sx={{ bgcolor: 'green', color: 'white' }}>
-              Search
-            </Button>
-          </Paper>
-        </Grid> */}
+        <Grid item xs={12}>
+          {filteredTransactions.length > 0 ? (
+            <List>
+              {filteredTransactions.map((transaction, index) => (
+                <Paper key={index} sx={{ marginBottom: 2, padding: 2 }}>
+                  <ListItem>
+                    <ListItemText
+                      primary={`${transaction.transaction_type} ${transaction.ticker} ${transaction.transaction_quantity} shares at price $${transaction.transaction_price}`}
+                      secondary={format(new Date(transaction.transaction_time), 'MMM dd, HH:mm:ss')}
+                    />
+                    <ListItemSecondaryAction>
+                      <Typography variant="h6" color={transaction.transaction_type === 'BUY' ? 'green' : 'red'}>
+                        {transaction.transaction_type === 'BUY' ? '+' : '-'}${transaction.transaction_value}
+                      </Typography>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                </Paper>
+              ))}
+            </List>
+          ) : (
+            <Typography>No transactions found.</Typography>
+          )}
+        </Grid>
       </Grid>
     </Box>
   );
