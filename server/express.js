@@ -19,7 +19,7 @@ app.use(express.static('public'));
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'c0nygre',
+  password: 'mrp19990511ASD',
   database: 'dashboard'
 });
 
