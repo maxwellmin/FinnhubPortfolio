@@ -5,8 +5,6 @@ import { Typography, Box, Button, Grid, Paper, TextField, Select, MenuItem, Form
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { color, padding } from '@mui/system';
 
-
-
 const header = 'http://localhost:3000'
 
 const StockPage = () => {
@@ -23,43 +21,6 @@ const StockPage = () => {
   const [webUrl, setWebUrl] = useState(null);
   const [newsData, setNewsData] = useState([]);
 
-  
-
-
-
-  // const fetchStockData = async () => {
-  //   const response = await fetch(`https://api.example.com/stock/${symbol}/history`);
-  //   const data = await response.json();
-
-  //   const formattedData = data.map(item => ({
-  //     date: item.date,
-  //     close: item.close
-  //   }));
-
-  //   setStockData(formattedData);
-  // };
-
-
-  // useEffect(() => {
-  //   // Replace this with your actual API call
-  //   const fetchStockData = async () => {
-  //     // Mocked data for demonstration purposes
-  //     const mockData = [
-  //       { date: '2023-08-01', close: 145.32 },
-  //       { date: '2023-08-02', close: 146.67 },
-  //       { date: '2023-08-03', close: 144.15 },
-  //       { date: '2023-08-04', close: 148.89 },
-  //       { date: '2023-08-05', close: 150.23 },
-  //       // Add more data points as needed
-  //     ];
-
-  //     // Simulate API call delay
-  //     setTimeout(() => setStockData(mockData), 500);
-  //   };
-
-  //   fetchStockData();
-  // }, [symbol]);
-
   useEffect(() => {
     // Replace this with your actual API call
     const fetchStockData = async () => {
@@ -71,7 +32,7 @@ const StockPage = () => {
             interval: '1d', // You can adjust the interval as needed
           },
         });
-        console.log("type of response: ", typeof (response.data), response.data)
+        console.log("type of response: ", typeof(response.data),response.data)
 
         setStockData(response.data);
       } catch (error) {
@@ -85,7 +46,7 @@ const StockPage = () => {
         setCurrentPrice(response.data.c); // Assuming the API returns the price as 'price'
         setChangePrice(response.data.d);
         setChangePercentPrice(response.data.dp);
-
+        
       } catch (error) {
         console.error('Error fetching current price:', error);
       }
@@ -98,7 +59,7 @@ const StockPage = () => {
         setLogoUrl(response.data.logo)
         setWebUrl(response.data.weburl)
       } catch (error) {
-        console.error('Error fetching news:', error);
+        console.error('Error fetching current price:', error);
       }
     };
 
@@ -128,7 +89,7 @@ const StockPage = () => {
         transaction_price: `${currentPrice}`,
         asset_type: 'Stock',  // Assuming all buys are stocks for now. Adjust if dynamic.
       };
-
+  
       const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
         method: 'POST',
         headers: {
@@ -136,7 +97,7 @@ const StockPage = () => {
         },
         body: JSON.stringify(transactionData),
       });
-
+  
       if (response.ok) {
         alert('Buy transaction successful');
         setAmount(''); // Clear the input field
@@ -148,7 +109,7 @@ const StockPage = () => {
       console.error('Error processing buy transaction:', error);
     }
   };
-
+  
   const handleSellClick = async () => {
     try {
       const transactionData = {
@@ -157,7 +118,7 @@ const StockPage = () => {
         transaction_quantity: parseFloat(amount),
         transaction_price: `${currentPrice}`,
       };
-
+  
       const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
         method: 'POST',
         headers: {
@@ -165,7 +126,7 @@ const StockPage = () => {
         },
         body: JSON.stringify(transactionData),
       });
-
+  
       if (response.ok) {
         alert('Sell transaction successful');
         setAmount(''); // Clear the input field
@@ -176,11 +137,11 @@ const StockPage = () => {
     } catch (error) {
       console.error('Error processing sell transaction:', error);
     }
-  };
+  };  
 
   return (
     <Box sx={{ padding: 4, minHeight: '100vh' }}>
-      <Grid container alignItems="center" justifyContent="space-between" style={{ marginBottom: "30px" }}>
+      <Grid container alignItems="center" justifyContent="space-between" style={{marginBottom:"30px"}}>
         <Grid item xs={5}>
           {/* Stock Information Header */}
           <Typography variant="h3">{symbol}</Typography>
@@ -195,17 +156,17 @@ const StockPage = () => {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {logoUrl ? (
-            <a href={`${webUrl}`} target="_blank" rel="noopener noreferrer">
-              <img
-                src={logoUrl}  // Use the actual image URL
-                alt={`${symbol} logo`}
-                style={{ width: '100%', maxWidth: '200px', maxHeight: '200px' }}
-              />
-            </a>
-          ) : (
-            <Typography variant="body1">Loading...</Typography>
-          )}
+        {logoUrl ? (
+          <a href={`${webUrl}`} target="_blank" rel="noopener noreferrer">
+            <img
+              src={logoUrl}  // Use the actual image URL
+              alt={`${symbol} logo`}
+              style={{ width: '100%', maxWidth: '200px', maxHeight: '200px' }}
+            />
+          </a>
+        ) : (
+          <Typography variant="body1">Loading...</Typography>
+        )}
         </Grid>
       </Grid>
 
@@ -217,7 +178,7 @@ const StockPage = () => {
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336' : '#4caf50'} activeDot={{ r: 8 }} />
+            <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336': '#4caf50'} activeDot={{ r: 8 }} />
           </LineChart>
         </ResponsiveContainer>
       ) : (
@@ -237,8 +198,8 @@ const StockPage = () => {
         ))}
       </Box>
 
-      {/* Equity and Portfolio Information */}
-      <Grid container spacing={2} sx={{ marginTop: 4 }}>
+       {/* Equity and Portfolio Information */}
+       <Grid container spacing={2} sx={{ marginTop: 4 }}>
         <Grid item xs={6}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Your Equity</Typography>
@@ -336,4 +297,3 @@ const StockPage = () => {
 };
 
 export default StockPage;
-
