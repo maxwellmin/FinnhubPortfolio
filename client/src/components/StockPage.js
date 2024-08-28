@@ -222,6 +222,26 @@ const StockPage = () => {
         ))}
       </Box>
 
+       {/* Equity and Portfolio Information */}
+       <Grid container spacing={2} sx={{ marginTop: 4 }}>
+        <Grid item xs={6}>
+          <Paper sx={{ padding: 2 }}>
+            <Typography variant="h6">Your Equity</Typography>
+            <Typography variant="h4">$4.35</Typography>
+            <Typography variant="body2">Today's Return: -$0.07 (-1.58%)</Typography>
+            <Typography variant="body2">Total Return: -$1.47 (-25.23%)</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper sx={{ padding: 2 }}>
+            <Typography variant="h6">Your average cost</Typography>
+            <Typography variant="h4">$3,583.74</Typography>
+            <Typography variant="body2">Quantity: 0.001624</Typography>
+            <Typography variant="body2">Portfolio diversity: 1.80%</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+
       {/* Trading Panel */}
       <Box sx={{ marginTop: 4 }}>
         <Paper sx={{ padding: 3 }}>
