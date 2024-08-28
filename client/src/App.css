@@ -22,3 +22,24 @@
   padding-top: 20px;
   padding-left: 60px;
 }
+
+/* CSS class for the outer container of the PortfolioSummary component */
+
+.PortfolioSummary {
+  list-style: none;
+  padding: 0;
+}
+
+.portfolio-item {
+  font-size: 16px; /* Adjust font size as needed */
+  margin-bottom: 10px; /* Space between items */
+}
+
+.item-name {
+  font-weight: bold; /* Bold for the stock name */
+}
+
+.item-details {
+  color: #555; /* Dark grey for the details */
+  margin-top: 2px; /* Small gap between the name and the details */
+}

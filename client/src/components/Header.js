@@ -68,7 +68,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
   };
 
   const newFeatures = () => {
-    alert('New features are coming soon');
+    alert('$20 per month for plus version!');  // Show an alert
   };
 
   const login = () => {
@@ -165,7 +165,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
           History
         </Button>
         <Button color="inherit" onClick={newFeatures} sx={{ color: 'secondary.light', ml: 2 }}>
-          Other features
+          Plus
         </Button>
         <IconButton onClick={toggleDarkMode} color="inherit" sx={{ color: darkMode ? 'white' : 'black' }}>
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}

@@ -7,7 +7,7 @@ import { color, padding } from '@mui/system';
 
 const header = 'http://localhost:3000'
 
-const StockPage = () => {
+const StockPage = ({ onTransactionComplete }) => {
   const { symbol } = useParams();
   const [stockData, setStockData] = useState([]);
   const [timeframe, setTimeframe] = useState('1D');
@@ -90,7 +90,7 @@ const StockPage = () => {
         asset_type: 'Stock',  // Assuming all buys are stocks for now. Adjust if dynamic.
       };
   
-      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
+      const response = await fetch(`${header}/api/dashboard/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,6 +101,7 @@ const StockPage = () => {
       if (response.ok) {
         alert('Buy transaction successful');
         setAmount(''); // Clear the input field
+        onTransactionComplete();
       } else {
         const errorData = await response.json();
         alert(`Transaction failed: ${errorData.message}`);
@@ -119,7 +120,7 @@ const StockPage = () => {
         transaction_price: `${currentPrice}`,
       };
   
-      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
+      const response = await fetch(`${header}/api/dashboard/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,6 +131,7 @@ const StockPage = () => {
       if (response.ok) {
         alert('Sell transaction successful');
         setAmount(''); // Clear the input field
+        onTransactionComplete();
       } else {
         const errorData = await response.json();
         alert(`Transaction failed: ${errorData.message}`);
