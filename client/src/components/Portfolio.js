@@ -86,7 +86,7 @@ const Portfolio = () => {
       </Box>
 
       <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
-        <Table sx={{ minWidth: 650 }} aria-label="detailed stocks table">
+        <Table sx={{ minWidth: 650 }} aria-label="detailed portfolio table">
           <TableHead>
             <TableRow>
               <TableCell>Asset Name</TableCell>
