@@ -36,7 +36,6 @@ const StockPage = () => {
   // };
   
 
-<<<<<<< Updated upstream
   // useEffect(() => {
   //   // Replace this with your actual API call
   //   const fetchStockData = async () => {
@@ -57,12 +56,6 @@ const StockPage = () => {
   //   fetchStockData();
   // }, [symbol]);
 
-  const [timeframe, setTimeframe] = useState('1D');
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('USD');
-  const [price, setPrice] = useState(100);
-=======
->>>>>>> Stashed changes
 
   useEffect(() => {
     // Replace this with your actual API call
@@ -117,7 +110,7 @@ const StockPage = () => {
         ticker: symbol,
         transaction_type: 'BUY',
         transaction_quantity: parseFloat(amount),
-        transaction_price: price,
+        transaction_price: `${currentPrice}`,
         asset_type: 'Stock',  // Assuming all buys are stocks for now. Adjust if dynamic.
       };
   
@@ -147,7 +140,7 @@ const StockPage = () => {
         ticker: symbol,
         transaction_type: 'SELL',
         transaction_quantity: parseFloat(amount),
-        transaction_price: price,
+        transaction_price: `${currentPrice}`,
       };
   
       const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
@@ -172,14 +165,6 @@ const StockPage = () => {
 
   return (
     <Box sx={{ padding: 4, minHeight: '100vh' }}>
-<<<<<<< Updated upstream
-      {/* Stock Information Header */}
-      <Typography variant="h3">{symbol}</Typography>
-      <Typography variant="h4">${price}</Typography> {/* Price is displayed */}
-      <Typography variant="body1" color="error">
-        -$43.12 (-1.58%) Today
-      </Typography>
-=======
       <Grid container alignItems="center" justifyContent="space-between" style={{marginBottom:"30px"}}>
         <Grid item xs={5}>
           {/* Stock Information Header */}
@@ -208,7 +193,6 @@ const StockPage = () => {
         )}
         </Grid>
       </Grid>
->>>>>>> Stashed changes
 
       {/* Chart Section */}
       {stockData.length > 0 ? (
