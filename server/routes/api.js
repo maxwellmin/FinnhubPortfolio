@@ -1,11 +1,5 @@
 import express from "express";
 
-import * as finAPI from '../finAPI.js';
-import cors from 'cors';
-import yahooFinance from 'yahoo-finance2';
-import finnhub from 'finnhub';
-import axios from 'axios';
-
 const router = express.Router();
 
 // Pass the pool connection as an argument
@@ -54,8 +48,8 @@ router.post('/dashboard/transaction', async (req, res) => {
 
         // Insert the transaction record
         await pool.query(
-          'INSERT INTO transaction (asset_id, ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?, ?)',
-          [asset_id, ticker, transaction_type, transaction_quantity, transaction_price]
+          'INSERT INTO transaction (ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?)',
+          [ticker, transaction_type, transaction_quantity, transaction_price]
         );
         return res.status(201).json({ message: 'Buy transaction successful and new asset added to portfolio' });
       } else {
@@ -79,8 +73,8 @@ router.post('/dashboard/transaction', async (req, res) => {
 
         // Insert the transaction record
         await pool.query(
-          'INSERT INTO transaction (asset_id, ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?, ?)',
-          [asset_id, ticker, transaction_type, transaction_quantity, transaction_price]
+          'INSERT INTO transaction (ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?)',
+          [ticker, transaction_type, transaction_quantity, transaction_price]
         );
 
         return res.status(201).json({ message: 'Buy transaction successful and portfolio updated' });
@@ -113,7 +107,7 @@ router.post('/dashboard/transaction', async (req, res) => {
 
         // Update the portfolio or delete if all sold
         if (newQuantity === 0) {
-          await pool.query('UPDATE portfolio SET quantity = ? WHERE asset_id = ?', [0, asset_id]);
+          await pool.query('DELETE FROM portfolio WHERE asset_id = ?', [asset_id]);
         } else {
           await pool.query(
             'UPDATE portfolio SET quantity = ?, purchase_price = ? WHERE asset_id = ?',
@@ -123,8 +117,8 @@ router.post('/dashboard/transaction', async (req, res) => {
 
         // Insert the transaction record
         await pool.query(
-          'INSERT INTO transaction (asset_id, ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?, ?)',
-          [asset_id, ticker, transaction_type, transaction_quantity, transaction_price]
+          'INSERT INTO transaction (ticker, transaction_type, transaction_quantity, transaction_price) VALUES (?, ?, ?, ?)',
+          [ticker, transaction_type, transaction_quantity, transaction_price]
         );
 
         return res.status(201).json({ message: 'Sell transaction successful and portfolio updated' });

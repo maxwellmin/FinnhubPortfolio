@@ -21,42 +21,6 @@ const StockPage = () => {
   const [logoUrl, setLogoUrl] = useState(null);
   const [webUrl, setWebUrl] = useState(null);
 
-
-
-  // const fetchStockData = async () => {
-  //   const response = await fetch(`https://api.example.com/stock/${symbol}/history`);
-  //   const data = await response.json();
-  
-  //   const formattedData = data.map(item => ({
-  //     date: item.date,
-  //     close: item.close
-  //   }));
-  
-  //   setStockData(formattedData);
-  // };
-  
-
-  // useEffect(() => {
-  //   // Replace this with your actual API call
-  //   const fetchStockData = async () => {
-  //     // Mocked data for demonstration purposes
-  //     const mockData = [
-  //       { date: '2023-08-01', close: 145.32 },
-  //       { date: '2023-08-02', close: 146.67 },
-  //       { date: '2023-08-03', close: 144.15 },
-  //       { date: '2023-08-04', close: 148.89 },
-  //       { date: '2023-08-05', close: 150.23 },
-  //       // Add more data points as needed
-  //     ];
-
-  //     // Simulate API call delay
-  //     setTimeout(() => setStockData(mockData), 500);
-  //   };
-
-  //   fetchStockData();
-  // }, [symbol]);
-
-
   useEffect(() => {
     // Replace this with your actual API call
     const fetchStockData = async () => {
