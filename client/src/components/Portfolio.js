@@ -3,9 +3,10 @@ import { Typography, Box, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 const pieData = [
-  { name: "Stocks & Options", value: 170.08, percentage: "70.52%", color: "#00C49F" },
-  { name: "Cryptocurrencies", value: 71.08, percentage: "29.47%", color: "#FFBB28" },
-  { name: "Individual Cash", value: 0.02, percentage: "0.01%", color: "#FF8042" }
+  { name: "Equities (Stocks)", value: 170.08, percentage: "70.52%", color: "#00C49F" },
+  { name: "Fixed Income (Bonds)", value: 71.08, percentage: "29.47%", color: "#FFBB28" },
+  { name: "Cash and Cash Equivalents", value: 0.02, percentage: "0.01%", color: "#FF8042" },
+  { name: "Cryptocurrencies", value: 0.02, percentage: "0.01%", color: "#FF8042" }
 ];
 
 const stocksData = [
@@ -20,17 +21,17 @@ const Portfolio = () => {
   return (
     <Box sx={{ p: 10, bgcolor: 'background.paper', boxShadow: 3, borderRadius: 2 }}>
       <Typography variant="h4" gutterBottom component="div">
-        Total Portfolio Value: ${totalValue.toFixed(2)}
+        Total Market Value: ${totalValue.toFixed(2)}
       </Typography>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <TableContainer component={Paper} sx={{ maxWidth: '50%', mr: 2 }}>
+        <TableContainer component={Paper} sx={{ maxWidth: '60%', mr: 2 }}>
           <Table sx={{ minWidth: 300 }} aria-label="portfolio summary table">
             <TableHead>
               <TableRow>
-                <TableCell>Asset Category</TableCell>
-                <TableCell align="right">Value ($)</TableCell>
-                <TableCell align="right">Percentage</TableCell>
+                <TableCell>Asset Type</TableCell>
+                <TableCell align="right">Market Value ($)</TableCell>
+                <TableCell align="right">Portfolio Allocation Percentage</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -60,13 +61,13 @@ const Portfolio = () => {
         <Table sx={{ minWidth: 650 }} aria-label="detailed stocks table">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Symbol</TableCell>
-              <TableCell align="right">Shares</TableCell>
-              <TableCell align="right">Price</TableCell>
-              <TableCell align="right">Average Cost</TableCell>
-              <TableCell align="right">Return</TableCell>
-              <TableCell align="right">Equity</TableCell>
+              <TableCell>Asset Name</TableCell>
+              <TableCell align="right">Ticker Symbol</TableCell>
+              <TableCell align="right">Quantity Held</TableCell>
+              <TableCell align="right">Current Market Price</TableCell>
+              <TableCell align="right">Market Value</TableCell>
+              <TableCell align="right">Average Purchase Cost</TableCell>
+              <TableCell align="right">Unrealized Gain/Loss</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
