@@ -1,21 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
-const pieData = [
-  { name: "Equities (Stocks)", value: 170.08, percentage: "70.52%", color: "#00C49F" },
-  { name: "Fixed Income (Bonds)", value: 71.08, percentage: "29.47%", color: "#FFBB28" },
-  { name: "Cash and Cash Equivalents", value: 0.02, percentage: "0.01%", color: "#FF8042" },
-  { name: "Cryptocurrencies", value: 0.02, percentage: "0.01%", color: "#FF8042" }
-];
-
-const stocksData = [
-  { name: "Apple", symbol: "AAPL", shares: 0.069, price: "$226.33", avgCost: "$217.24", return: 0.63, equity: "$15.63" },
-  { name: "NVIDIA", symbol: "NVDA", shares: 0.115, price: "$126.75", avgCost: "$130.63", return: -0.45, equity: "$14.55" },
-  { name: "Meta Platforms", symbol: "META", shares: 0.019, price: "$520.53", avgCost: "$522.93", return: -0.05, equity: "$9.95" }
-];
-
 const Portfolio = () => {
+  const [pieData, setPieData] = useState([
+    { name: "Equities (Stocks)", value: 170.08, percentage: "70.52%", color: "#00C49F" },
+    { name: "Fixed Income (Bonds)", value: 71.08, percentage: "29.47%", color: "#FFBB28" },
+    { name: "Cash and Cash Equivalents", value: 0.02, percentage: "0.01%", color: "#FF8042" },
+    { name: "Cryptocurrencies", value: 0.02, percentage: "0.01%", color: "#FF8042" }
+  ]);
+
+  const [stocksData, setStocksData] = useState([]);
+
+  useEffect(() => {
+    // Fetch portfolio data from the backend
+    async function fetchPortfolioData() {
+      try {
+        const response = await fetch('http://localhost:3000/api/dashboard/portfolio');
+        const data = await response.json();
+
+        // For each item, fetch the company description by ticker
+        const updatedData = await Promise.all(data.map(async (item) => {
+          const companyResponse = await fetch(`http://localhost:3000/fin/companydesp/${item.ticker}`);
+          const companyData = await companyResponse.json();
+          
+          return {
+            name: companyData.name || "N/A",  // Use the fetched company name
+            symbol: item.ticker || "N/A", 
+            shares: item.quantity || "N/A", 
+            price: "$" + (item.current_price || "N/A"), 
+            avgCost: "$" + (item.purchase_price || "N/A"), 
+            return: item.unrealized_return || "N/A", 
+            equity: "$" + (item.net_worth || "N/A")
+          };
+        }));
+
+        setStocksData(updatedData);
+      } catch (error) {
+        console.error('Error fetching portfolio data:', error);
+      }
+    }
+
+    fetchPortfolioData();
+  }, []);
+
   const totalValue = pieData.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
@@ -71,15 +99,15 @@ const Portfolio = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stocksData.map((row) => (
-              <TableRow key={row.name}>
+            {stocksData.map((row, index) => (
+              <TableRow key={index}>
                 <TableCell>{row.name}</TableCell>
                 <TableCell align="right">{row.symbol}</TableCell>
                 <TableCell align="right">{row.shares}</TableCell>
                 <TableCell align="right">{row.price}</TableCell>
-                <TableCell align="right">{row.avgCost}</TableCell>
-                <TableCell align="right">{row.return >= 0 ? `↑ $${row.return.toFixed(2)}` : `↓ $${-row.return.toFixed(2)}`}</TableCell>
                 <TableCell align="right">{row.equity}</TableCell>
+                <TableCell align="right">{row.avgCost}</TableCell>
+                <TableCell align="right">{row.return >= 0 ? `↑ $${row.return.toFixed(2)}` : `↓ $${Math.abs(row.return).toFixed(2)}`}</TableCell>
               </TableRow>
             ))}
           </TableBody>
