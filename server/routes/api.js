@@ -19,7 +19,7 @@ export default (pool) => {
     // Get transaction composition
     router.get('/dashboard/transaction', async (req, res) => {
       try {
-        const [rows] = await pool.query('SELECT * FROM transaction');
+        const [rows] = await pool.query('SELECT * from transaction');
         res.json(rows);
       } catch (error) {
         console.error('Error fetching transaction:', error);
