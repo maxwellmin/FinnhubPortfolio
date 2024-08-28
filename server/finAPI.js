@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
-import async from 'express-async-errors';
-import url from 'url';
-import https from 'https';
+// import async from 'express-async-errors';
+// import url from 'url';
+// import https from 'https';
 
 const api_key = "cr6jve9r01qnuep5ti80cr6jve9r01qnuep5ti8g";
 

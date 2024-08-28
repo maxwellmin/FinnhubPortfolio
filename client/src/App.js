@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Box, Grid } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Grid, ButtonGroup, Button, Typography, Paper } from '@mui/material';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import BalanceDisplay from './components/BalanceDisplay';
@@ -10,10 +10,12 @@ import Portfolio from './components/Portfolio';
 import Login from './components/Login'; 
 import History from './components/History';
 
+
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [investmentItems, setInvestmentItems] = useState([]);
-
+  const [buyingPower, setBuyingPower] = useState(0.02);
+  const [timeRange, setTimeRange] = useState('1D');
   const balanceData = {
     total: '246.03',
     todayChange: '+0.09',

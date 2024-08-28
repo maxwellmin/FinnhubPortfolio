@@ -14,16 +14,3 @@ const BalanceDisplay = ({ total, todayChange }) => {
 };
 
 export default BalanceDisplay;
-
-
-
-// import React from 'react';
-
-// const BalanceDisplay = ({ total, todayChange }) => (
-//   <div className="BalanceDisplay" style={{ paddingTop: '50px', paddingLeft: '100px' }}> {/* Adjust padding as needed */}
-//     <h2>Current Balance: ${total} </h2>
-//     <p>{todayChange} Today</p>
-//   </div>
-// );
-
-// export default BalanceDisplay;
