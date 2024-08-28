@@ -10,7 +10,7 @@ const History = () => {
   const [tickers, setTickers] = useState([]);
 
   useEffect(() => {
-    fetch("/api/dashboard/transaction")
+    fetch("http://localhost:3000/api/dashboard/transaction")
       .then(response => response.json())
       .then(data => {
         // Sort transactions by time (newest first)
