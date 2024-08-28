@@ -1,8 +1,13 @@
+<<<<<<< Updated upstream
 import React, { useState, useEffect } from 'react';
+=======
+import React, { useState } from 'react';
+>>>>>>> Stashed changes
 import { Dialog, DialogContent, DialogTitle, TextField, Button, Box, Typography, Paper, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const InvestmentChart = ({ data }) => {
+<<<<<<< Updated upstream
   // Initialize state with local storage or default value
   const [buyingPower, setBuyingPower] = useState(() => {
     const saved = localStorage.getItem('buyingPower');
@@ -18,6 +23,14 @@ const InvestmentChart = ({ data }) => {
   useEffect(() => {
     localStorage.setItem('buyingPower', buyingPower);
   }, [buyingPower]);
+=======
+  const [timeframe, setTimeframe] = useState('1D');
+  const [open, setOpen] = useState(false);
+  const [amount, setAmount] = useState('');
+  const [fromAccount, setFromAccount] = useState('HSBC'); // Default from My Account
+  const [toAccount, setToAccount] = useState('My Account'); // Default to Chase
+  const [buyingPower, setBuyingPower] = useState(0); // Initial buying power
+>>>>>>> Stashed changes
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -25,13 +38,24 @@ const InvestmentChart = ({ data }) => {
   const handleTransfer = () => {
     if (amount && amount > 0) {
       if (fromAccount === 'My Account') {
+<<<<<<< Updated upstream
         setBuyingPower(prev => prev - parseFloat(amount));
       } else if (toAccount === 'My Account') {
+=======
+        // Transferring from My Account to another bank
+        setBuyingPower(prev => prev - parseFloat(amount));
+      } else if (toAccount === 'My Account') {
+        // Transferring from another bank to My Account
+>>>>>>> Stashed changes
         setBuyingPower(prev => prev + parseFloat(amount));
       }
       console.log(`Transferring $${amount} from ${fromAccount} to ${toAccount}`);
       handleClose();
+<<<<<<< Updated upstream
       alert('Transfer successful!');
+=======
+      alert(`You re Rich!`);
+>>>>>>> Stashed changes
     } else {
       alert('Please enter a valid amount');
     }
