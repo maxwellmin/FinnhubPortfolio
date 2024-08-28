@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Typography, Box, Button, Grid, Paper, TextField, Select, MenuItem, FormControl } from '@mui/material';
+import { Typography, Box, Button, Grid, Paper, TextField, Select, MenuItem, FormControl, Card, CardContent, CardMedia } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { color, padding } from '@mui/system';
+
 
 const header = 'http://localhost:3000'
 
@@ -19,10 +20,47 @@ const StockPage = () => {
   const [stockName, setStockName] = useState(null);
   const [logoUrl, setLogoUrl] = useState(null);
   const [webUrl, setWebUrl] = useState(null);
+  const [newsData, setNewsData] = useState([]);
+
   const [buyingPower, setBuyingPower] = useState(() => {
     const saved = localStorage.getItem('buyingPower');
     return saved ? parseFloat(saved) : 0;
   });
+
+
+  // const fetchStockData = async () => {
+  //   const response = await fetch(`https://api.example.com/stock/${symbol}/history`);
+  //   const data = await response.json();
+  
+  //   const formattedData = data.map(item => ({
+  //     date: item.date,
+  //     close: item.close
+  //   }));
+  
+  //   setStockData(formattedData);
+  // };
+  
+
+  // useEffect(() => {
+  //   // Replace this with your actual API call
+  //   const fetchStockData = async () => {
+  //     // Mocked data for demonstration purposes
+  //     const mockData = [
+  //       { date: '2023-08-01', close: 145.32 },
+  //       { date: '2023-08-02', close: 146.67 },
+  //       { date: '2023-08-03', close: 144.15 },
+  //       { date: '2023-08-04', close: 148.89 },
+  //       { date: '2023-08-05', close: 150.23 },
+  //       // Add more data points as needed
+  //     ];
+
+  //     // Simulate API call delay
+  //     setTimeout(() => setStockData(mockData), 500);
+  //   };
+
+  //   fetchStockData();
+  // }, [symbol]);
+
 
   useEffect(() => {
     // Initial data fetching
@@ -42,11 +80,54 @@ const StockPage = () => {
         setLogoUrl(responses[2].data.logo);
         setWebUrl(responses[2].data.weburl);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching current price:', error);
       }
     };
 
+    const fetchStockData = async () => {
+      // Mocked data for demonstration purposes
+      try {
+        const response = await axios.get(`${header}/fin/yahoo1/historical/${symbol}`, {
+          params: {
+            range: '1y', // You can adjust the range as needed
+            interval: '1d', // You can adjust the interval as needed
+          },
+        });
+        console.log("type of response: ", typeof (response.data), response.data)
+
+        setStockData(response.data);
+      } catch (error) {
+        console.error('Error fetching stock data:', error);
+      }
+    };
+
+    const fetchDescription = async () => {
+      try {
+        const response = await axios.get(`${header}/fin/companydesp/${symbol}`);
+        setStockName(response.data.name); 
+        setLogoUrl(response.data.logo)
+        setWebUrl(response.data.weburl)
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      }
+    };
+
+    const fetchNews = async () => {
+      try {
+        const response = await axios.get(`${header}/fin/news/${symbol}`);
+        setNewsData(response.data)
+        console.log(response.data)
+      } catch (error) {
+        console.error('Error fetching current price:', error);
+      }
+    };
+    
+
     fetchData();
+    fetchNews();
+    fetchStockData();
+    fetchCurrentPrice();
+    fetchDescription();
   }, [symbol]);
 
   const updateBuyingPower = (newBuyingPower) => {
@@ -74,7 +155,7 @@ const StockPage = () => {
 
   return (
     <Box sx={{ padding: 4, minHeight: '100vh' }}>
-      <Grid container alignItems="center" justifyContent="space-between" style={{marginBottom:"30px"}}>
+      <Grid container alignItems="center" justifyContent="space-between" style={{ marginBottom: "30px" }}>
         <Grid item xs={5}>
           <Typography variant="h3">{symbol}</Typography>
           <Typography variant="h5" style={{ color: 'grey' }}>{stockName || 'Loading...'}</Typography>
@@ -89,8 +170,12 @@ const StockPage = () => {
         </Grid>
         <Grid item xs={1}>
           {logoUrl ? (
-            <a href={webUrl} target="_blank" rel="noopener noreferrer">
-              <img src={logoUrl} alt={`${symbol} logo`} style={{ width: '100%', maxWidth: '200px', maxHeight: '200px' }} />
+            <a href={`${webUrl}`} target="_blank" rel="noopener noreferrer">
+              <img
+                src={logoUrl}  // Use the actual image URL
+                alt={`${symbol} logo`}
+                style={{ width: '100%', maxWidth: '200px', maxHeight: '200px' }}
+              />
             </a>
           ) : (
             <Typography variant="body1">Loading...</Typography>
@@ -105,6 +190,7 @@ const StockPage = () => {
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
+            <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336' : '#4caf50'} activeDot={{ r: 8 }} />
             <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336' : '#4caf50'} activeDot={{ r: 8 }} />
           </LineChart>
         </ResponsiveContainer>
