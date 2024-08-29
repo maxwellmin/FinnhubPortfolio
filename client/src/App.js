@@ -24,40 +24,7 @@ function App() {
     todayChange: '+0.09',
   };
 
-  // Mocked data for chart
-  const chartData = [
-        { name: 'day1', value: 240 },
-        { name: 'day2', value: 230 },
-        { name: 'day3', value: 250 },
-        { name: 'day4', value: 220 },
-        { name: 'day5', value: 290 },
-        { name: 'day6', value: 265 },
-        { name: 'day7', value: 280 },
-        { name: 'day8', value: 275 },
-        { name: 'day9', value: 260 },
-        { name: 'day10', value: 285 },
-        { name: 'day11', value: 290 },
-        { name: 'day12', value: 300 },
-        { name: 'day13', value: 310 },
-        { name: 'day14', value: 305 },
-        { name: 'day15', value: 320 },
-        { name: 'day16', value: 330 },
-        { name: 'day17', value: 340 },
-        { name: 'day18', value: 335 },
-        { name: 'day19', value: 345 },
-        { name: 'day20', value: 350 },
-        { name: 'day21', value: 360 },
-        { name: 'day22', value: 370 },
-        { name: 'day23', value: 365 },
-        { name: 'day24', value: 355 },
-        { name: 'day25', value: 345 },
-        { name: 'day26', value: 350 },
-        { name: 'day27', value: 360 },
-        { name: 'day28', value: 370 },
-        { name: 'day29', value: 380 },
-        { name: 'day30', value: 1 }
-      ];
-    
+  const chartData = [];
 
   useEffect(() => {
     fetchPortfolioData();

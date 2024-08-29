@@ -4,6 +4,7 @@ import '../App.css';
 const BalanceDisplay = () => {
   const [total, setTotal] = useState(0);
   const [totalChange, setTotalChange] = useState(0);
+  const [ChangeInPercentage , setChangeInPercentage] = useState(0);
 
   useEffect(() => {
     // Fetch portfolio data from the backend and calculate total market value
@@ -15,17 +16,18 @@ const BalanceDisplay = () => {
         let calculatedTotal = 0;
         let changeInValue = 0;
         let totalPurchaseCost = 0;
+        let changeInPercentage = 0;
 
         // Loop through each item in the portfolio to get the latest price
         const updatedData = await Promise.all(portfolioData.map(async (item) => {
-          const priceResponse = await fetch(`http://localhost:3000/fin/latestprice/${item.ticker}`);
+          const priceResponse = await fetch(`http://localhost:3000/fin/yahoo1/current/${item.ticker}`);
           const stockPrice = await priceResponse.json();
 
           console.log('Ticker:', item.ticker); // Debugging
           console.log('Quantity:', item.quantity); // Debugging
-          console.log('Stock Price:', stockPrice.c); // Debugging
+          console.log('Stock Price:', stockPrice); // Debugging
 
-          const currentMarketValue = item.quantity * stockPrice.c;
+          const currentMarketValue = item.quantity * stockPrice;
           const purchaseCost = item.quantity * item.purchase_price;
 
           calculatedTotal += currentMarketValue;
@@ -33,16 +35,19 @@ const BalanceDisplay = () => {
 
           // Assuming `item.unrealized_return` is today's change for each asset.
           changeInValue = calculatedTotal - totalPurchaseCost;
+          changeInPercentage = changeInValue / totalPurchaseCost;
 
           return {
             ...item,
-            current_price: stockPrice.c, // Update with the latest price
+            current_price: stockPrice, // Update with the latest price
             net_worth: currentMarketValue.toFixed(2),
           };
         }));
 
         setTotal(calculatedTotal.toFixed(2)); // Update the total value
-        setTotalChange(changeInValue.toFixed(2)); // Update the change in value
+        setTotalChange(changeInValue.toFixed(2));
+        setChangeInPercentage(changeInPercentage.toFixed(4));
+
       } catch (error) {
         console.error('Error fetching portfolio data:', error);
       }
@@ -57,7 +62,8 @@ const BalanceDisplay = () => {
   return (
     <div className="BalanceDisplay">
       <h2>Portfolio Market Value: ${total}</h2>
-      <p className={changeClass}>{totalChange} Today</p>
+      <p className={changeClass}>
+        {{totalChange} >= 0 ? `↑ ${totalChange}` : `↓ ${Math.abs(totalChange)}`} ({(ChangeInPercentage*100).toFixed(2)}%) Today</p>
     </div>
   );
 };
