@@ -27,6 +27,27 @@ export default (pool) => {
       }
     });
 
+// Get portfolio data for a specific ticker
+router.get('/dashboard/portfolio/:ticker', async (req, res) => {
+  const { ticker } = req.params;
+
+  try {
+    const [rows] = await pool.query('SELECT * FROM portfolio WHERE ticker = ?', [ticker]);
+    
+    
+
+    if (rows.length > 0) {
+      res.json(rows[0]);  // Return the first row (there should only be one row per ticker)
+    } else {
+      res.status(404).json({ message: 'Ticker not found in portfolio' });
+    }
+  } catch (error) {
+    console.error('Error fetching portfolio data:', error);
+    res.status(500).json({ message: 'Error fetching portfolio data' });
+  }
+});
+
+
   // Buy/Sell Transaction Handler
   
 router.post('/dashboard/transaction', async (req, res) => {

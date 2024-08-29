@@ -31,7 +31,7 @@ const Portfolio = () => {
             ticker: item.ticker,
             quantityHeld: item.quantity,
             currentPrice: "$" + (stockPrice.c || "N/A"),
-            marketValue: "$" + (item.quantity * stockPrice.c || "N/A"),
+            marketValue: "$" + (item.quantity * stockPrice.c.toFixed(2) || "N/A"),
             avgCost: "$" + (item.purchase_price || "N/A"),
             return: (item.quantity * stockPrice.c - item.net_worth) / (item.net_worth) * 100
           };

@@ -21,6 +21,12 @@ const StockPage = ({ onTransactionComplete }) => {
   const [webUrl, setWebUrl] = useState(null);
   const [newsData, setNewsData] = useState([]);
 
+    // New states for portfolio data
+    const [equity, setEquity] = useState(0);
+    const [totalReturn, setTotalReturn] = useState(0);
+    const [avgCost, setAvgCost] = useState(0);
+    const [quantity, setQuantity] = useState(0);
+
   useEffect(() => {
     // Replace this with your actual API call
     const fetchStockData = async () => {
@@ -73,12 +79,43 @@ const StockPage = ({ onTransactionComplete }) => {
       }
     };
 
+    const fetchPortfolioData = async () => {
+      try {
+        const response = await axios.get(`${header}/api/dashboard/portfolio/${symbol}`);
+        const portfolioData = response.data;
+        
+    
+        if (portfolioData) {
+          const currentMarketValue = portfolioData.quantity * currentPrice;
+          const unrealizedReturn = (currentPrice - portfolioData.purchase_price) * portfolioData.quantity;
+    
+          setEquity(currentMarketValue.toFixed(2));
+          setTotalReturn(unrealizedReturn.toFixed(2));
+          setAvgCost(portfolioData.purchase_price);
+          setQuantity(portfolioData.quantity);
+        } else {
+          // If no data found, set all values to 0
+          setEquity(0);
+          setTotalReturn(0);
+          setAvgCost(0);
+          setQuantity(0);
+        }
+      } catch (error) {
+        console.error('Error fetching portfolio data:', error);
+        setEquity(0);
+        setTotalReturn(0);
+        setAvgCost(0);
+        setQuantity(0);
+      }
+    };    
+
     fetchStockData();
     fetchCurrentPrice();
     fetchDescription();
     fetchNews();
+    fetchPortfolioData();
 
-  }, [symbol]);
+  }, [symbol, currentPrice]);
 
   const handleBuyClick = async () => {
     try {
@@ -205,17 +242,15 @@ const StockPage = ({ onTransactionComplete }) => {
         <Grid item xs={6}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Your Equity</Typography>
-            <Typography variant="h4">$4.35</Typography>
-            <Typography variant="body2">Today's Return: -$0.07 (-1.58%)</Typography>
-            <Typography variant="body2">Total Return: -$1.47 (-25.23%)</Typography>
+            <Typography variant="h4">${equity}</Typography>
+            <Typography variant="body1">Total Return: ${totalReturn}</Typography>
           </Paper>
         </Grid>
         <Grid item xs={6}>
           <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6">Your average cost</Typography>
-            <Typography variant="h4">$3,583.74</Typography>
-            <Typography variant="body2">Quantity: 0.001624</Typography>
-            <Typography variant="body2">Portfolio diversity: 1.80%</Typography>
+            <Typography variant="h6">Your Average Cost / Share</Typography>
+            <Typography variant="h4">${avgCost}</Typography>
+            <Typography variant="body1">Quantity Held: {quantity}</Typography>
           </Paper>
         </Grid>
       </Grid>
