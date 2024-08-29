@@ -3,50 +3,103 @@ import { Typography, Box, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 const Portfolio = () => {
-  const [pieData, setPieData] = useState([
-    { name: "Equities (Stocks)", value: 170.08, percentage: "70.52%", color: "#00C49F" },
-    { name: "Fixed Income (Bonds)", value: 71.08, percentage: "29.47%", color: "#FFBB28" },
-    { name: "Cash and Cash Equivalents", value: 0.02, percentage: "0.01%", color: "#FF8042" },
-    { name: "Cryptocurrencies", value: 0.02, percentage: "0.01%", color: "#FF8042" }
-  ]);
-
+  const [pieData, setPieData] = useState([]);
   const [stocksData, setStocksData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch portfolio data from the backend
     async function fetchPortfolioData() {
       try {
+        setLoading(true);
         const response = await fetch('http://localhost:3000/api/dashboard/portfolio');
         const data = await response.json();
+        console.log('Portfolio Data:', data);
 
-        // For each item, fetch the company description by ticker
+        if (!Array.isArray(data)) {
+          throw new Error('Expected an array of data');
+        }
+
+        // Fetch the company descriptions and latest prices
         const updatedData = await Promise.all(data.map(async (item) => {
           const companyResponse = await fetch(`http://localhost:3000/fin/companydesp/${item.ticker}`);
           const companyData = await companyResponse.json();
-          const priceResponse = await fetch(`http://localhost:3000/fin/latestprice/${item.ticker}`);
+          let priceResponse
+          if(item.asset_type === 'Cryptocurrencies'){
+            priceResponse = await fetch(`http://localhost:3000/fin/yahoo1/current/${item.ticker}-USD`);
+          } else{
+            priceResponse = await fetch(`http://localhost:3000/fin/yahoo1/current/${item.ticker}`);
+          }
+          
           const stockPrice = await priceResponse.json();
 
+          const currentPrice = parseFloat(stockPrice) || 0;
+          const quantityHeld = parseFloat(item.quantity) || 0;
+          const marketValue = currentPrice * quantityHeld;
+          const netWorth = parseFloat(item.net_worth) || 0;
+
           return {
-            assetName: companyData.name || "N/A",  // Use the fetched company name
+            assetName: (() => {
+              if (item.ticker === "QQQ") return "Invesco QQQ Trust";
+              if (item.ticker === "BTC") return "Bitcoin";
+              return companyData.name || "N/A";
+            })(),
             ticker: item.ticker,
-            quantityHeld: item.quantity,
-            currentPrice: "$" + (stockPrice.c || "N/A"),
-            marketValue: "$" + (item.quantity * stockPrice.c.toFixed(2) || "N/A"),
-            avgCost: "$" + (item.purchase_price || "N/A"),
-            return: (item.quantity * stockPrice.c - item.net_worth) / (item.net_worth) * 100
+            quantityHeld: quantityHeld.toFixed(2),
+            currentPrice: "$" + (currentPrice.toFixed(2) || "N/A"),
+            marketValue: "$" + (marketValue.toFixed(2) || "N/A"),
+            avgCost: "$" + (parseFloat(item.purchase_price) || "N/A"),
+            return: netWorth ? ((marketValue - netWorth) / netWorth * 100).toFixed(2) : "N/A",
+            assetType: item.asset_type // Include assetType for pieData calculation
           };
         }));
 
+        console.log('Stocks Data:', updatedData);
         setStocksData(updatedData);
+
+        // Calculate pieData based on updatedData
+        const assetTypeTotals = updatedData.reduce((acc, item) => {
+          if (!acc[item.assetType]) {
+            acc[item.assetType] = { value: 0, color: getColorForAssetType(item.assetType) };
+          }
+          acc[item.assetType].value += parseFloat(item.marketValue.replace('$', '').replace(',', '')) || 0;
+          return acc;
+        }, {});
+
+        const totalNetWorth = Object.values(assetTypeTotals).reduce((sum, asset) => sum + asset.value, 0);
+
+        const updatedPieData = Object.entries(assetTypeTotals).map(([key, value]) => ({
+          name: key,
+          value: value.value,
+          percentage: totalNetWorth > 0 ? ((value.value / totalNetWorth) * 100).toFixed(2) + '%' : '0%',
+          color: value.color
+        }));
+
+        console.log('Pie Data:', updatedPieData);
+        setPieData(updatedPieData);
       } catch (error) {
         console.error('Error fetching portfolio data:', error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchPortfolioData();
   }, []);
 
-  const totalValue = pieData.reduce((acc, curr) => acc + curr.value, 0);
+  const getColorForAssetType = (assetType) => {
+    switch (assetType) {
+      case 'Equities (Stocks)':
+        return "#00C49F";
+      case 'ETFs':
+        return "#FFBB28";
+      case 'Cryptocurrencies':
+        return "#FF8042";
+      default:
+        return "#8884d8";
+    }
+  };
+
+  const totalValue = pieData.reduce((acc, curr) => acc + (parseFloat(curr.value) || 0), 0);
 
   return (
     <Box sx={{ p: 10, bgcolor: 'background.paper', boxShadow: 3, borderRadius: 2 }}>
@@ -54,38 +107,42 @@ const Portfolio = () => {
         Total Market Value: ${totalValue.toFixed(2)}
       </Typography>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <TableContainer component={Paper} sx={{ maxWidth: '60%', mr: 2 }}>
-          <Table sx={{ minWidth: 300 }} aria-label="portfolio summary table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Asset Type</TableCell>
-                <TableCell align="right">Market Value ($)</TableCell>
-                <TableCell align="right">Portfolio Allocation Percentage</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {pieData.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell align="right">{`$${item.value.toFixed(2)}`}</TableCell>
-                  <TableCell align="right">{item.percentage}</TableCell>
+      {loading ? (
+        <Typography variant="h6" component="div">Loading...</Typography>
+      ) : (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <TableContainer component={Paper} sx={{ maxWidth: '60%', mr: 2 }}>
+            <Table sx={{ minWidth: 300 }} aria-label="portfolio summary table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Asset Type</TableCell>
+                  <TableCell align="right">Market Value ($)</TableCell>
+                  <TableCell align="right">Portfolio Allocation Percentage</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {pieData.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell align="right">{(parseFloat(item.value) || 0).toFixed(2)}</TableCell>
+                    <TableCell align="right">{item.percentage}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-        <PieChart width={300} height={300}>
-          <Pie dataKey="value" data={pieData} cx={150} cy={100} outerRadius={100} fill="#8884d8">
-            {pieData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend verticalAlign="bottom" height={50} />
-        </PieChart>
-      </Box>
+          <PieChart width={300} height={300}>
+            <Pie dataKey="value" data={pieData} cx={150} cy={100} outerRadius={100}>
+              {pieData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend verticalAlign="bottom" height={50} />
+          </PieChart>
+        </Box>
+      )}
 
       <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
         <Table sx={{ minWidth: 650 }} aria-label="detailed portfolio table">
@@ -110,11 +167,12 @@ const Portfolio = () => {
                 <TableCell align="right">{row.marketValue}</TableCell>
                 <TableCell align="right">{row.avgCost}</TableCell>
                 <TableCell align="right">
-                  {row.return >= 0
-                    ? `↑ ${row.return.toFixed(2)}%`
-                    : `↓ ${row.return.toFixed(2)}%`}
+                  {row.return && row.return !== "N/A"
+                    ? (parseFloat(row.return) >= 0
+                      ? `↑ ${row.return}%`
+                      : `↓ ${row.return}%`)
+                    : "N/A"}
                 </TableCell>
-
               </TableRow>
             ))}
           </TableBody>
