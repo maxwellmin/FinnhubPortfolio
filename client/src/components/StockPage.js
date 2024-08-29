@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Typography, Box, Button, Grid, Paper, TextField, Select, MenuItem, FormControl, Card, CardContent, CardMedia } from '@mui/material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ComposedChart, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Bar } from 'recharts';
 import { color, padding } from '@mui/system';
+import Highcharts from 'highcharts/highstock';
+import HighchartsReact from 'highcharts-react-official';
 
 const header = 'http://localhost:3000'
 
@@ -23,40 +25,77 @@ const StockPage = ({ onTransactionComplete }) => {
 
   
 
+  // New states for portfolio data
+  const [equity, setEquity] = useState(0);
+  const [totalReturn, setTotalReturn] = useState(0);
+  const [avgCost, setAvgCost] = useState(0);
+  const [quantity, setQuantity] = useState(0);
 
-
-  // const fetchStockData = async () => {
-  //   const response = await fetch(`https://api.example.com/stock/${symbol}/history`);
-  //   const data = await response.json();
-
-  //   const formattedData = data.map(item => ({
-  //     date: item.date,
-  //     close: item.close
-  //   }));
-
-  //   setStockData(formattedData);
-  // };
-
-
-  // useEffect(() => {
-  //   // Replace this with your actual API call
-  //   const fetchStockData = async () => {
-  //     // Mocked data for demonstration purposes
-  //     const mockData = [
-  //       { date: '2023-08-01', close: 145.32 },
-  //       { date: '2023-08-02', close: 146.67 },
-  //       { date: '2023-08-03', close: 144.15 },
-  //       { date: '2023-08-04', close: 148.89 },
-  //       { date: '2023-08-05', close: 150.23 },
-  //       // Add more data points as needed
-  //     ];
-
-  //     // Simulate API call delay
-  //     setTimeout(() => setStockData(mockData), 500);
-  //   };
-
-  //   fetchStockData();
-  // }, [symbol]);
+  const highchartsOptions = {
+    chart: {
+      type: 'candlestick',
+      height: 600,
+    },
+    // title: {
+    //   text: `${symbol} Stock Price`,
+    // },
+    rangeSelector: {
+      selected: 1,
+    },
+    navigator: {
+      height: 40,  // Adjust the height of the navigator
+      top: 530,    // Adjust this value to move the navigator lower
+    },
+    series: [{
+      name: 'Stock Price',
+      data: stockData.map(data => [
+        new Date(data.date).setHours(0, 0, 0, 0),  // x-axis (time)
+        data.open, // open price
+        data.high, // high price
+        data.low,  // low price
+        data.close // close price
+      ]),
+      color: 'red',    // Color for bearish (close < open)
+      upColor: 'green',
+      tooltip: {
+        valueDecimals: 2
+      }
+    },
+    {
+      name: 'Volume',
+      type: 'column',
+      data: stockData.map(data => ({
+        x: new Date(data.date).setHours(0, 0, 0, 0), // x value (timestamp)
+        y: data.volume, // y value (volume)
+        color: data.close > data.open ? 'green' : 'red', // Conditional color based on price movement
+      })),
+      yAxis: 1, // Link this series to the second y-axis
+      tooltip: {
+        valueDecimals: 0
+      }
+    }],
+    xAxis: {
+      type: 'datetime',
+      dateTimeLabelFormats: {
+        day: '%Y-%m-%d' // 只显示日期部分
+      }
+    },
+    yAxis: [{
+      title: {
+        text: 'Price'
+      }
+    },
+    {
+      title: {
+        text: 'Volume'
+      },
+      top: '85%',
+      height: 60,
+      offset: 0,
+      lineWidth: 2,
+      opposite: true // Position the y-axis on the right side of the chart
+    }]
+  };
 
   useEffect(() => {
     // Replace this with your actual API call
@@ -109,12 +148,43 @@ const StockPage = ({ onTransactionComplete }) => {
       }
     };
 
+    const fetchPortfolioData = async () => {
+      try {
+        const response = await axios.get(`${header}/api/dashboard/portfolio/${symbol}`);
+        const portfolioData = response.data;
+
+
+        if (portfolioData) {
+          const currentMarketValue = portfolioData.quantity * currentPrice;
+          const unrealizedReturn = (currentPrice - portfolioData.purchase_price) * portfolioData.quantity;
+
+          setEquity(currentMarketValue.toFixed(2));
+          setTotalReturn(unrealizedReturn.toFixed(2));
+          setAvgCost(portfolioData.purchase_price);
+          setQuantity(portfolioData.quantity);
+        } else {
+          // If no data found, set all values to 0
+          setEquity(0);
+          setTotalReturn(0);
+          setAvgCost(0);
+          setQuantity(0);
+        }
+      } catch (error) {
+        console.error('Error fetching portfolio data:', error);
+        setEquity(0);
+        setTotalReturn(0);
+        setAvgCost(0);
+        setQuantity(0);
+      }
+    };
+
     fetchStockData();
     fetchCurrentPrice();
     fetchDescription();
     fetchNews();
+    fetchPortfolioData();
 
-  }, [symbol]);
+  }, [symbol, currentPrice]);
 
   const handleBuyClick = async () => {
     try {
@@ -126,7 +196,7 @@ const StockPage = ({ onTransactionComplete }) => {
         asset_type: 'Stock',  // Assuming all buys are stocks for now. Adjust if dynamic.
       };
 
-      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
+      const response = await fetch(`${header}/api/dashboard/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,6 +207,7 @@ const StockPage = ({ onTransactionComplete }) => {
       if (response.ok) {
         alert('Buy transaction successful');
         setAmount(''); // Clear the input field
+        onTransactionComplete();
       } else {
         const errorData = await response.json();
         alert(`Transaction failed: ${errorData.message}`);
@@ -155,7 +226,7 @@ const StockPage = ({ onTransactionComplete }) => {
         transaction_price: `${currentPrice}`,
       };
 
-      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
+      const response = await fetch(`${header}/api/dashboard/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,6 +237,7 @@ const StockPage = ({ onTransactionComplete }) => {
       if (response.ok) {
         alert('Sell transaction successful');
         setAmount(''); // Clear the input field
+        onTransactionComplete();
       } else {
         const errorData = await response.json();
         alert(`Transaction failed: ${errorData.message}`);
@@ -207,7 +279,7 @@ const StockPage = ({ onTransactionComplete }) => {
       </Grid>
 
       {/* Chart Section */}
-      {stockData.length > 0 ? (
+      {/* {stockData.length > 0 ? (
         (() => {
           const dataMax = Math.max(...stockData.map(d => d.close));
           const dataMin = Math.min(...stockData.map(d => d.close));
@@ -230,7 +302,7 @@ const StockPage = ({ onTransactionComplete }) => {
               <LineChart data={stockData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
-                <YAxis domain={[yAxisMin, yAxisMax]} tickCount={numTicks + 1} label={false} /> {/* 删除 Y 轴标签 */}
+                <YAxis domain={[yAxisMin, yAxisMax]} tickCount={numTicks + 1} label={false} /> 
                 <Tooltip />
                 <Line 
                   type="monotone" 
@@ -241,11 +313,21 @@ const StockPage = ({ onTransactionComplete }) => {
               </LineChart>
             </ResponsiveContainer>
           );
-        })()
+        })() 
       ) : (
         <Typography variant="body2">Loading stock data...</Typography>
       )}
+        */}
 
+      {stockData.length > 0 ? (
+        <HighchartsReact
+          highcharts={Highcharts}
+          constructorType={'stockChart'}
+          options={highchartsOptions}
+        />
+      ) : (
+        <Typography variant="body2">Loading stock data...</Typography>
+      )}
 
 
 
@@ -268,17 +350,15 @@ const StockPage = ({ onTransactionComplete }) => {
         <Grid item xs={6}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Your Equity</Typography>
-            <Typography variant="h4">$4.35</Typography>
-            <Typography variant="body2">Today's Return: -$0.07 (-1.58%)</Typography>
-            <Typography variant="body2">Total Return: -$1.47 (-25.23%)</Typography>
+            <Typography variant="h4">${equity}</Typography>
+            <Typography variant="body1">Total Return: ${totalReturn}</Typography>
           </Paper>
         </Grid>
         <Grid item xs={6}>
           <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6">Your average cost</Typography>
-            <Typography variant="h4">$3,583.74</Typography>
-            <Typography variant="body2">Quantity: 0.001624</Typography>
-            <Typography variant="body2">Portfolio diversity: 1.80%</Typography>
+            <Typography variant="h6">Your Average Cost / Share</Typography>
+            <Typography variant="h4">${avgCost}</Typography>
+            <Typography variant="body1">Quantity Held: {quantity}</Typography>
           </Paper>
         </Grid>
       </Grid>
