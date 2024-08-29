@@ -56,10 +56,14 @@ const InvestmentChart = ({ data }) => {
         ))}
       </Box>
 
-      <Paper sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 2, marginTop: 2 }}>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>Buying Power: ${buyingPower.toFixed(2)}</Typography>
-        <Button variant="contained" onClick={handleOpen} sx={{ flexGrow: 0 }}>Transfer funds</Button>
+      <Paper sx={{ display: 'flex', flexDirection: 'column', padding: 2, marginTop: 2 }}>
+        <Typography variant="h5" sx={{ marginBottom: 2 }}>My Account</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant="h7">Available: ${buyingPower.toFixed(2)}</Typography>
+          <Button variant="contained" onClick={handleOpen}>Transfer funds</Button>
+        </Box>
       </Paper>
+
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Transfer Money</DialogTitle>

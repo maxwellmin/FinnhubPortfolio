@@ -208,18 +208,47 @@ const StockPage = ({ onTransactionComplete }) => {
 
       {/* Chart Section */}
       {stockData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={400} sx={{ marginTop: 4 }}>
-          <LineChart data={stockData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336' : '#4caf50'} activeDot={{ r: 8 }} />
-          </LineChart>
-        </ResponsiveContainer>
+        (() => {
+          const dataMax = Math.max(...stockData.map(d => d.close));
+          const dataMin = Math.min(...stockData.map(d => d.close));
+
+          // 计算区间跨度
+          const range = dataMax - dataMin;
+
+          // 定义刻度数量，这个可以根据需要调整，比如5个间隔
+          const numTicks = 5;
+
+          // 计算每个间隔的大小
+          const tickInterval = Math.ceil(range / numTicks);
+
+          // 确定新的 dataMax 和 dataMin，使得它们是 tickInterval 的整数倍
+          const yAxisMax = Math.ceil(dataMax / tickInterval) * tickInterval;
+          const yAxisMin = Math.floor(dataMin / tickInterval) * tickInterval;
+
+          return (
+            <ResponsiveContainer width="100%" height={500} sx={{ marginTop: 4 }}>
+              <LineChart data={stockData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis domain={[yAxisMin, yAxisMax]} tickCount={numTicks + 1} label={false} /> {/* 删除 Y 轴标签 */}
+                <Tooltip />
+                <Line 
+                  type="monotone" 
+                  dataKey="close" 
+                  stroke={changePrice < 0 ? '#f44336': '#4caf50'} 
+                  activeDot={{ r: 8 }} 
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          );
+        })()
       ) : (
         <Typography variant="body2">Loading stock data...</Typography>
       )}
+
+
+
+
 
       {/* Timeframe Selector */}
       <Box sx={{ display: 'flex', justifyContent: 'space-around', marginY: 3 }}>
