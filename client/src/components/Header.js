@@ -165,7 +165,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
           History
         </Button>
         <Button color="inherit" onClick={newFeatures} sx={{ color: 'secondary.light', ml: 2 }}>
-          Plus
+          Other features
         </Button>
         <IconButton onClick={toggleDarkMode} color="inherit" sx={{ color: darkMode ? 'white' : 'black' }}>
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}

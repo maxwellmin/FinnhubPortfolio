@@ -21,11 +21,42 @@ const StockPage = ({ onTransactionComplete }) => {
   const [webUrl, setWebUrl] = useState(null);
   const [newsData, setNewsData] = useState([]);
 
-    // New states for portfolio data
-    const [equity, setEquity] = useState(0);
-    const [totalReturn, setTotalReturn] = useState(0);
-    const [avgCost, setAvgCost] = useState(0);
-    const [quantity, setQuantity] = useState(0);
+  
+
+
+
+  // const fetchStockData = async () => {
+  //   const response = await fetch(`https://api.example.com/stock/${symbol}/history`);
+  //   const data = await response.json();
+
+  //   const formattedData = data.map(item => ({
+  //     date: item.date,
+  //     close: item.close
+  //   }));
+
+  //   setStockData(formattedData);
+  // };
+
+
+  // useEffect(() => {
+  //   // Replace this with your actual API call
+  //   const fetchStockData = async () => {
+  //     // Mocked data for demonstration purposes
+  //     const mockData = [
+  //       { date: '2023-08-01', close: 145.32 },
+  //       { date: '2023-08-02', close: 146.67 },
+  //       { date: '2023-08-03', close: 144.15 },
+  //       { date: '2023-08-04', close: 148.89 },
+  //       { date: '2023-08-05', close: 150.23 },
+  //       // Add more data points as needed
+  //     ];
+
+  //     // Simulate API call delay
+  //     setTimeout(() => setStockData(mockData), 500);
+  //   };
+
+  //   fetchStockData();
+  // }, [symbol]);
 
   useEffect(() => {
     // Replace this with your actual API call
@@ -52,7 +83,6 @@ const StockPage = ({ onTransactionComplete }) => {
         setCurrentPrice(response.data.c); // Assuming the API returns the price as 'price'
         setChangePrice(response.data.d);
         setChangePercentPrice(response.data.dp);
-        
       } catch (error) {
         console.error('Error fetching current price:', error);
       }
@@ -79,43 +109,12 @@ const StockPage = ({ onTransactionComplete }) => {
       }
     };
 
-    const fetchPortfolioData = async () => {
-      try {
-        const response = await axios.get(`${header}/api/dashboard/portfolio/${symbol}`);
-        const portfolioData = response.data;
-        
-    
-        if (portfolioData) {
-          const currentMarketValue = portfolioData.quantity * currentPrice;
-          const unrealizedReturn = (currentPrice - portfolioData.purchase_price) * portfolioData.quantity;
-    
-          setEquity(currentMarketValue.toFixed(2));
-          setTotalReturn(unrealizedReturn.toFixed(2));
-          setAvgCost(portfolioData.purchase_price);
-          setQuantity(portfolioData.quantity);
-        } else {
-          // If no data found, set all values to 0
-          setEquity(0);
-          setTotalReturn(0);
-          setAvgCost(0);
-          setQuantity(0);
-        }
-      } catch (error) {
-        console.error('Error fetching portfolio data:', error);
-        setEquity(0);
-        setTotalReturn(0);
-        setAvgCost(0);
-        setQuantity(0);
-      }
-    };    
-
     fetchStockData();
     fetchCurrentPrice();
     fetchDescription();
     fetchNews();
-    fetchPortfolioData();
 
-  }, [symbol, currentPrice]);
+  }, [symbol]);
 
   const handleBuyClick = async () => {
     try {
@@ -126,19 +125,18 @@ const StockPage = ({ onTransactionComplete }) => {
         transaction_price: `${currentPrice}`,
         asset_type: 'Stock',  // Assuming all buys are stocks for now. Adjust if dynamic.
       };
-  
-      const response = await fetch(`${header}/api/dashboard/transaction`, {
+
+      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(transactionData),
       });
-  
+
       if (response.ok) {
         alert('Buy transaction successful');
         setAmount(''); // Clear the input field
-        onTransactionComplete();
       } else {
         const errorData = await response.json();
         alert(`Transaction failed: ${errorData.message}`);
@@ -156,19 +154,18 @@ const StockPage = ({ onTransactionComplete }) => {
         transaction_quantity: parseFloat(amount),
         transaction_price: `${currentPrice}`,
       };
-  
-      const response = await fetch(`${header}/api/dashboard/transaction`, {
+
+      const response = await fetch('http://localhost:3000/api/dashboard/transaction', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(transactionData),
       });
-  
+
       if (response.ok) {
         alert('Sell transaction successful');
         setAmount(''); // Clear the input field
-        onTransactionComplete();
       } else {
         const errorData = await response.json();
         alert(`Transaction failed: ${errorData.message}`);
@@ -176,7 +173,7 @@ const StockPage = ({ onTransactionComplete }) => {
     } catch (error) {
       console.error('Error processing sell transaction:', error);
     }
-  };  
+  };
 
   return (
     <Box sx={{ padding: 4, minHeight: '100vh' }}>
@@ -217,7 +214,7 @@ const StockPage = ({ onTransactionComplete }) => {
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336': '#4caf50'} activeDot={{ r: 8 }} />
+            <Line type="monotone" dataKey="close" stroke={changePrice < 0 ? '#f44336' : '#4caf50'} activeDot={{ r: 8 }} />
           </LineChart>
         </ResponsiveContainer>
       ) : (
@@ -237,20 +234,22 @@ const StockPage = ({ onTransactionComplete }) => {
         ))}
       </Box>
 
-       {/* Equity and Portfolio Information */}
-       <Grid container spacing={2} sx={{ marginTop: 4 }}>
+      {/* Equity and Portfolio Information */}
+      <Grid container spacing={2} sx={{ marginTop: 4 }}>
         <Grid item xs={6}>
           <Paper sx={{ padding: 2 }}>
             <Typography variant="h6">Your Equity</Typography>
-            <Typography variant="h4">${equity}</Typography>
-            <Typography variant="body1">Total Return: ${totalReturn}</Typography>
+            <Typography variant="h4">$4.35</Typography>
+            <Typography variant="body2">Today's Return: -$0.07 (-1.58%)</Typography>
+            <Typography variant="body2">Total Return: -$1.47 (-25.23%)</Typography>
           </Paper>
         </Grid>
         <Grid item xs={6}>
           <Paper sx={{ padding: 2 }}>
-            <Typography variant="h6">Your Average Cost / Share</Typography>
-            <Typography variant="h4">${avgCost}</Typography>
-            <Typography variant="body1">Quantity Held: {quantity}</Typography>
+            <Typography variant="h6">Your average cost</Typography>
+            <Typography variant="h4">$3,583.74</Typography>
+            <Typography variant="body2">Quantity: 0.001624</Typography>
+            <Typography variant="body2">Portfolio diversity: 1.80%</Typography>
           </Paper>
         </Grid>
       </Grid>
@@ -334,3 +333,4 @@ const StockPage = ({ onTransactionComplete }) => {
 };
 
 export default StockPage;
+
