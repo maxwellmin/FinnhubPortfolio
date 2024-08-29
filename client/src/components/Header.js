@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AppBar, Toolbar, Typography, Button, TextField, Box, IconButton, MenuItem } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, TextField, Box, IconButton, MenuItem, List, ListItem, ListItemText } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -38,9 +38,12 @@ const Header = ({ darkMode, toggleDarkMode }) => {
   };
 
   const handleSearch = () => {
-    if (searchQuery.trim()) {
-      navigate(`/stock/${encodeURIComponent(searchQuery)}`);
+    console.log('Searching for:', searchQuery);
+    if (searchQuery.trim()) {  // Check if searchQuery is not just whitespace
+      navigate(`/stock/${encodeURIComponent(searchQuery)}`);  // Navigate to the stock page
     }
+    setSearchQuery(''); 
+    setSuggestions([]);
   };
 
   const returnHomeClick = () => {
@@ -132,6 +135,33 @@ const Header = ({ darkMode, toggleDarkMode }) => {
           <Button color="inherit" onClick={handleSearch} sx={{ color: 'secondary.light', ml: 1 }}>
             <SearchIcon />
           </Button>
+          {suggestions.length > 0 && (
+            <List sx={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              width: "500px",
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'grey.300',
+              maxHeight: '80px',
+              overflowY: 'auto',
+              zIndex: 1,
+            }}>
+              {suggestions.map((suggestion, index) => (
+                <ListItem button key={index} onClick={() => handleSuggestionClick(suggestion.symbol)}>
+                  <ListItemText primary={suggestion.symbol}  
+                    primaryTypographyProps={{
+                      style: {
+                        color: 'grey',    // Set the color to grey
+                        fontSize: '0.8rem', // Reduce the font size (14px)
+                      },
+                    }}/>
+                </ListItem>
+              ))}
+            </List>
+          )}
         </Box>
         <Button color="inherit" onClick={toPortfolio} sx={{ color: 'secondary.light', ml: 5 }}>
           Portfolio
