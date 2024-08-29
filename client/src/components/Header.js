@@ -189,7 +189,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
               width: '200px',
             }}>
               <MenuItem
-                onClick={() => navigate('/about')}
+                onClick={() => navigate('/contact')}
                 sx={{
                   color: 'secondary.light',
                   '&:hover': {
@@ -198,10 +198,10 @@ const Header = ({ darkMode, toggleDarkMode }) => {
                   },
                 }}
               >
-                About Us
+                Contact Us
               </MenuItem>
               <MenuItem
-                onClick={() => navigate('/contact')}
+                onClick={() => navigate('/careers')}
                 sx={{
                   color: 'secondary.light',
                   '&:hover': {
@@ -213,7 +213,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
                 Careers
               </MenuItem>
               <MenuItem
-                onClick={() => navigate('/support')}
+                onClick={() => navigate('/developers')}
                 sx={{
                   color: 'secondary.light',
                   '&:hover': {
@@ -222,7 +222,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
                   },
                 }}
               >
-                Funds
+                Developers
               </MenuItem>
             </Box>
           )}

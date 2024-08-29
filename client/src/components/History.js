@@ -39,7 +39,7 @@ const History = () => {
   return (
     <Box sx={{ padding: 10, minHeight: '100vh' }}>
       <Typography variant="h4" sx={{ marginBottom: 4 }}>
-        User Name
+        Transactions
       </Typography>
 
       <Grid container spacing={4}>

@@ -9,6 +9,10 @@ import StockPage from './components/StockPage';
 import Portfolio from './components/Portfolio'; 
 import Login from './components/Login'; 
 import History from './components/History';
+import Careers from './components/careers';
+import Contact from './components/contactUs';
+import Developers from './components/Developers';
+
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -153,6 +157,9 @@ function App() {
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/history" element={<History />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/developers" element={<Developers />} />
           </Routes>
         </Box>
       </Router>
