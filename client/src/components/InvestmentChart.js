@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, TextField, Button, Box, Typography, Paper, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import axios from 'axios';
+import dayjs from 'dayjs';
 
-const InvestmentChart = ({ data }) => {
+const InvestmentChart = () => {
   // Initialize state with local storage or default value
   const [buyingPower, setBuyingPower] = useState(() => {
     const saved = localStorage.getItem('buyingPower');
@@ -13,11 +15,54 @@ const InvestmentChart = ({ data }) => {
   const [amount, setAmount] = useState('');
   const [fromAccount, setFromAccount] = useState('HSBC');
   const [toAccount, setToAccount] = useState('My Account');
+  const [chartData, setChartData] = useState([]);
 
   // Update local storage when buying power changes
   useEffect(() => {
     localStorage.setItem('buyingPower', buyingPower);
   }, [buyingPower]);
+
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        // Fetch your portfolio data
+        const portfolioResponse = await axios.get('http://localhost:3000/api/dashboard/portfolio');
+        const portfolioData = portfolioResponse.data;
+
+        let chartData = [];
+
+        for (let asset of portfolioData) {
+          const { ticker, purchase_price, quantity } = asset;
+
+          // Fetch historical data for each ticker
+          const historicalResponse = await axios.get(`http://localhost:3000/fin/yahoo1/historical/timeRange/${ticker}?start=2024-01-01&end=2024-08-30`);
+          const historicalData = historicalResponse.data;
+
+          historicalData.forEach((dayData) => {
+            const { date, close } = dayData;
+
+            // Calculate daily return
+            const dailyReturn = ((close - purchase_price) * quantity).toFixed(2);
+
+            // Find if date already exists in chartData
+            let existingDay = chartData.find(day => day.name === date);
+
+            if (existingDay) {
+              existingDay.value = (parseFloat(existingDay.value) + parseFloat(dailyReturn)).toFixed(2);
+            } else {
+              chartData.push({ name: date, value: dailyReturn });
+            }
+          });
+        }
+
+        setChartData(chartData);
+      } catch (error) {
+        console.error('Error fetching chart data:', error);
+      }
+    };
+
+    fetchChartData();
+  }, []);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -37,24 +82,56 @@ const InvestmentChart = ({ data }) => {
     }
   };
 
+  console.log(`max: ${chartData.max}`);
+  console.log(chartData.min);
+
+
   return (
     <div className="InvestmentChart">
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
-        </LineChart>
-      </ResponsiveContainer>
-
-      <Box sx={{ display: 'flex', justifyContent: 'space-around', marginY: 3 }}>
-        {['LIVE', '1D', '1W', '1M', '3M', '1Y', 'ALL'].map((tf) => (
-          <Button key={tf} sx={{ color: timeframe === tf ? '#f06595' : 'text.primary' }} onClick={() => setTimeframe(tf)}>{tf}</Button>
-        ))}
+      <Box sx={{ textAlign: 'center', marginBottom: 2 }}>
+        <Typography variant="h6" component="div">
+          Year-to-Date Portfolio Return
+        </Typography>
       </Box>
+      <ResponsiveContainer width="100%" height={400}>
+        {chartData.length > 0 ? (
+          (() => {
+            const dataMax = Math.max(...chartData.map(d => d.value));
+            const dataMin = Math.min(...chartData.map(d => d.value));
+
+            // Calculate the range and define the number of ticks
+            const range = dataMax - dataMin;
+            const numTicks = 5;
+            const tickInterval = Math.ceil(range / numTicks);
+
+            // Adjust the Y-axis max and min values to be multiples of the tick interval
+            const yAxisMax = Math.ceil(dataMax / tickInterval) * tickInterval;
+            const yAxisMin = Math.floor(dataMin / tickInterval) * tickInterval;
+
+            return (
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="name" 
+                  tickFormatter={(date) => dayjs(date).format('MMM DD')} // Format the date as "Jan 29"
+                  interval="preserveEnd"  // Ensure the interval captures the ends of the range
+                  ticks={chartData.filter((_, index) => index % Math.floor(chartData.length / 7) === 0).map(d => d.name)} // Show approx 8 ticks
+                />
+                <YAxis domain={[yAxisMin - 100, yAxisMax + 100]} tickCount={numTicks + 1} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8884d8"
+                  dot={false}
+                />
+              </LineChart>
+            );
+          })()
+        ) : (
+          <Typography variant="body2">Loading chart data...</Typography>
+        )}
+      </ResponsiveContainer>
 
       <Paper sx={{ display: 'flex', flexDirection: 'column', padding: 2, marginTop: 2 }}>
         <Typography variant="h5" sx={{ marginBottom: 2 }}>My Account</Typography>
@@ -114,51 +191,3 @@ const InvestmentChart = ({ data }) => {
 };
 
 export default InvestmentChart;
-
-
-// import React, { useState } from 'react';
-// import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-// import { Box, ButtonGroup, Button, Typography, Paper } from '@mui/material';
-
-// const InvestmentChart = ({ data, buyingPower, onDeposit, onEnableMargin }) => {
-//   const [timeframe, setTimeframe] = useState('1D');
-
-//   return (
-//     <div className="InvestmentChart">
-      
-//       <ResponsiveContainer width="100%" height={400}>
-//         <LineChart data={data}>
-//           <CartesianGrid strokeDasharray="3 3" />
-//           <XAxis dataKey="name" />
-//           <YAxis />
-//           <Tooltip />
-//           <Legend />
-//           <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
-//         </LineChart>
-//       </ResponsiveContainer>
-
-//       <Box sx={{ display: 'flex', justifyContent: 'space-around', marginY: 3 }}>
-//         {['LIVE', '1D', '1W', '1M', '3M', '1Y', 'ALL'].map((tf) => (
-//           <Button
-//             key={tf}
-//             sx={{ color: timeframe === tf ? '#f06595' : 'text.primary' }}
-//             onClick={() => setTimeframe(tf)}
-//           >
-//             {tf}
-//           </Button>
-//         ))}
-//       </Box>
-      
-//       <Paper sx={{ marginTop: 2, padding: 2 }}>
-//         <Typography variant="h6">Buying Power</Typography>
-//         <Typography variant="body2">Total: ${buyingPower}</Typography>
-//         <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-//           <Button variant="outlined" onClick={onEnableMargin}>Enable margin</Button>
-//           <Button variant="contained" onClick={onDeposit}>Deposit funds</Button>
-//         </Box>
-//       </Paper>
-//     </div>
-//   );
-// };
-
-// export default InvestmentChart;

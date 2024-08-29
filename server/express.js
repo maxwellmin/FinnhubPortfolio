@@ -150,6 +150,49 @@ app.get('/fin/news/:keyword', async (req, res) => {
   return res.send(array);
 });
 
+//根据ticker和时间range获取close price
+app.get('/fin/yahoo1/historical/timeRange/:ticker', async (req, res) => {
+  const { ticker } = req.params;
+  const range = req.query.range || "1y"; // Optional, can still be used if no specific start and end are provided
+  const interval = req.query.interval || "1d";
+  
+  // Use start and end time if provided, otherwise use range
+  const start = req.query.start ? new Date(req.query.start).getTime() / 1000 : null; 
+  const end = req.query.end ? new Date(req.query.end).getTime() / 1000 : null;
+
+  let uri;
+
+  if (start && end) {
+    uri = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=${interval}&period1=${start}&period2=${end}`;
+  } else {
+    uri = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=${interval}&range=${range}`;
+  }
+
+  try {
+    const response = await axios.get(uri);
+    const data = response.data;
+    //console.log(data.chart.result[0].indicators.quote[0]);
+
+    if (data.chart.result) {
+      const result = data.chart.result[0];
+      const timestamps = result.timestamp.map(t => new Date(t * 1000));
+      const prices = result.indicators.quote[0].close; // You can also use 'high', 'low', or 'open' based on your need
+
+      const resultArray = timestamps.map((timestamp, index) => ({
+        date: timestamp.toISOString().slice(0, 10),
+        close: prices[index] !== null ? prices[index].toFixed(2) : null,
+      }));
+
+      res.json(resultArray);
+    } else {
+      res.status(404).json({ error: "No data found for the given ticker" });
+    }
+  } catch (error) {
+    console.error('Error fetching historical data:', error);
+    res.status(500).send('Error fetching historical data');
+  }
+});
+
 // Function to check if the response is an object and log its length
 function checkObject(priceRes, tickerName) {
   if (typeof priceRes === "object") {
