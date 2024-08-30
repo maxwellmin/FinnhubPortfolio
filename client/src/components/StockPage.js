@@ -35,10 +35,8 @@ const StockPage = ({ onTransactionComplete }) => {
     chart: {
       type: 'candlestick',
       height: 600,
+      //backgroundColor: '#000000'
     },
-    // title: {
-    //   text: `${symbol} Stock Price`,
-    // },
     rangeSelector: {
       selected: 1,
     },
@@ -83,13 +81,14 @@ const StockPage = ({ onTransactionComplete }) => {
     yAxis: [{
       title: {
         text: 'Price'
-      }
+      },
+      height:'80%'
     },
     {
       title: {
         text: 'Volume'
       },
-      top: '85%',
+      top: '86%',
       height: 60,
       offset: 0,
       lineWidth: 2,
@@ -278,47 +277,6 @@ const StockPage = ({ onTransactionComplete }) => {
         </Grid>
       </Grid>
 
-      {/* Chart Section */}
-      {/* {stockData.length > 0 ? (
-        (() => {
-          const dataMax = Math.max(...stockData.map(d => d.close));
-          const dataMin = Math.min(...stockData.map(d => d.close));
-
-          // 计算区间跨度
-          const range = dataMax - dataMin;
-
-          // 定义刻度数量，这个可以根据需要调整，比如5个间隔
-          const numTicks = 5;
-
-          // 计算每个间隔的大小
-          const tickInterval = Math.ceil(range / numTicks);
-
-          // 确定新的 dataMax 和 dataMin，使得它们是 tickInterval 的整数倍
-          const yAxisMax = Math.ceil(dataMax / tickInterval) * tickInterval;
-          const yAxisMin = Math.floor(dataMin / tickInterval) * tickInterval;
-
-          return (
-            <ResponsiveContainer width="100%" height={500} sx={{ marginTop: 4 }}>
-              <LineChart data={stockData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis domain={[yAxisMin, yAxisMax]} tickCount={numTicks + 1} label={false} /> 
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="close" 
-                  stroke={changePrice < 0 ? '#f44336': '#4caf50'} 
-                  activeDot={{ r: 8 }} 
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          );
-        })() 
-      ) : (
-        <Typography variant="body2">Loading stock data...</Typography>
-      )}
-        */}
-
       {stockData.length > 0 ? (
         <HighchartsReact
           highcharts={Highcharts}
@@ -389,7 +347,7 @@ const StockPage = ({ onTransactionComplete }) => {
                   />
                   <Button
                     fullWidth
-                    sx={{ bgcolor: '#f06595', color: 'white', marginTop: 2 }}
+                    sx={{ bgcolor: '#EE3524', color: 'white', marginTop: 2 }}
                     onClick={handleBuyClick}
                   >
                     Buy
@@ -399,7 +357,7 @@ const StockPage = ({ onTransactionComplete }) => {
 
                   <Button
                     fullWidth
-                    sx={{ border: '1px solid #f06595', color: '#f06595', marginTop: 2 }}
+                    sx={{ border: '1px solid #EE3524', color: '#EE3524', marginTop: 2 }}
                     onClick={handleSellClick}
                   >
                     Sell

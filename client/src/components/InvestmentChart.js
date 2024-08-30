@@ -137,7 +137,7 @@ const InvestmentChart = () => {
         <Typography variant="h5" sx={{ marginBottom: 2 }}>My Account</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h7">Available: ${buyingPower.toFixed(2)}</Typography>
-          <Button variant="contained" onClick={handleOpen}>Transfer funds</Button>
+          <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleTransfer} >Confirm Transfer</Button>
         </Box>
       </Paper>
 

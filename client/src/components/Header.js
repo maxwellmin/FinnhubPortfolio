@@ -5,6 +5,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ourLogo from '../ourLogo.jpg';
 
 const Header = ({ darkMode, toggleDarkMode }) => {
   const header = "http://localhost:3000";
@@ -89,20 +90,21 @@ const Header = ({ darkMode, toggleDarkMode }) => {
   }, [showDropdown]);
 
   return (
-    <AppBar position="static" sx={{ bgcolor: darkMode ? 'grey.900' : 'white' }}>
+    <AppBar position="static" sx={{ bgcolor: '#EE3524' }}>
       <Toolbar>
         <Button
           onClick={returnHomeClick}
           sx={{
             textTransform: 'none',
-            color: darkMode ? 'white' : 'black',
+            //color: darkMode ? 'white' : 'black',
+            color:'white',
             '&:hover': {
               backgroundColor: 'transparent',
             },
           }}
         >
           <Typography variant="h6" component="div">
-            Homepage
+          < img src={ourLogo} alt="Homepage" style={{ height: '40px'}} />
           </Typography>
         </Button>
         <Box sx={{ mx: 5, display: 'flex', alignItems: 'center', flexGrow: 1, position: 'relative' }}>
@@ -132,7 +134,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
               },
             }}
           />
-          <Button color="inherit" onClick={handleSearch} sx={{ color: 'secondary.light', ml: 1 }}>
+          <Button color="inherit" onClick={handleSearch} sx={{ color: 'white', ml: 1 }}>
             <SearchIcon />
           </Button>
           {suggestions.length > 0 && (
@@ -163,17 +165,17 @@ const Header = ({ darkMode, toggleDarkMode }) => {
             </List>
           )}
         </Box>
-        <Button color="inherit" onClick={toPortfolio} sx={{ color: 'secondary.light', ml: 5 }}>
+        <Button color="inherit" onClick={toPortfolio} sx={{ color: 'white', ml: 5 }}>
           Portfolio
         </Button>
-        <Button color="inherit" onClick={toHistory} sx={{ color: 'secondary.light', ml: 2 }}>
+        <Button color="inherit" onClick={toHistory} sx={{ color: 'white', ml: 2 }}>
           History
         </Button>
-        <Button color="inherit" onClick={plus} sx={{ color: 'secondary.light', ml: 2 }}>
+        <Button color="inherit" onClick={plus} sx={{ color: 'white', ml: 2 }}>
           Plus
         </Button>
         <Box sx={{ position: 'relative' }}>
-          <Button color="inherit" onClick={toggleDropdown} sx={{ color: 'secondary.light', ml: 2 }}>
+          <Button color="inherit" onClick={toggleDropdown} sx={{ color: 'white', ml: 2 }}>
             Discover More
           </Button>
           {showDropdown && (
@@ -203,7 +205,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
               <MenuItem
                 onClick={() => navigate('/careers')}
                 sx={{
-                  color: 'secondary.light',
+                  color: 'white',
                   '&:hover': {
                     backgroundColor: 'transparent',
                     color: darkMode ? 'white' : 'black',
@@ -215,7 +217,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
               <MenuItem
                 onClick={() => navigate('/developers')}
                 sx={{
-                  color: 'secondary.light',
+                  color: 'white',
                   '&:hover': {
                     backgroundColor: 'transparent',
                     color: darkMode ? 'white' : 'black',
@@ -230,7 +232,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
         <IconButton onClick={toggleDarkMode} color="inherit" sx={{ color: darkMode ? 'white' : 'black' }}>
           {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
-        <Button color="inherit" onClick={login} sx={{ color: 'secondary.light', ml: 1 }}>
+        <Button color="inherit" onClick={login} sx={{ color: 'white', ml: 1 }}>
           Sign In
         </Button>
       </Toolbar>

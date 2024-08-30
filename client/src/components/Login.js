@@ -54,7 +54,7 @@ const Login = () => {
           <Button
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 2 , bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}}
             onClick={handleLogin}
           >
             Log In
@@ -62,7 +62,11 @@ const Login = () => {
           <Button
             fullWidth
             variant="outlined"
-            sx={{ mt: 1, mb: 2 }}
+            sx={{ mt: 1, mb: 2, color:'#EE3524' ,borderColor: '#EE3524', // Border color
+              '&:hover': {
+                borderColor: '#EE3524', // Maintain border color on hover
+                backgroundColor: 'rgba(238, 53, 36, 0.08)', // Optional: add a light background on hover
+              },}}
             onClick={handleRegister}
           >
             Register
