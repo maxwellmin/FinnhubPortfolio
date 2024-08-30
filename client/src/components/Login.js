@@ -5,19 +5,28 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [registeredUsers, setRegisteredUsers] = useState(['exampleUser']); // Simulated user database
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault(); // Prevent form from submitting
-    console.log('Attempting to log in with:', username, password);
-    // Here you would usually handle authentication logic or call an API
-    alert('Welcome back!')
-    navigate('/'); // Redirect to a dashboard or home page on successful login
+    if (registeredUsers.includes(username)) {
+      console.log('Attempting to log in with:', username, password);
+      alert('Welcome back!');
+      navigate('/'); // Redirect to a dashboard or home page on successful login
+    } else {
+      alert('Please register first');
+    }
   };
 
   const handleRegister = () => {
-    alert('Hello New face! Welcome to our APP')
-    navigate('/'); // Redirect to a dashboard or home page on successful login
+    if (!registeredUsers.includes(username)) {
+      setRegisteredUsers(prevUsers => [...prevUsers, username]); // Add new user to "database"
+      alert('Hello New face! Welcome to our APP');
+      navigate('/'); // Redirect after registration
+    } else {
+      alert('This username is already taken, please choose another one or log in.');
+    }
   };
 
   return (
@@ -62,10 +71,10 @@ const Login = () => {
           <Button
             fullWidth
             variant="outlined"
-            sx={{ mt: 1, mb: 2, color:'#EE3524' ,borderColor: '#EE3524', // Border color
+            sx={{ mt: 1, mb: 2, color:'#EE3524' ,borderColor: '#EE3524',
               '&:hover': {
-                borderColor: '#EE3524', // Maintain border color on hover
-                backgroundColor: 'rgba(238, 53, 36, 0.08)', // Optional: add a light background on hover
+                borderColor: '#EE3524',
+                backgroundColor: 'rgba(238, 53, 36, 0.08)',
               },}}
             onClick={handleRegister}
           >

@@ -5,6 +5,7 @@ import PersonIcon from '@mui/icons-material/Person'; // Example icon for person
 const Developers = () => {
   const [developers, setDevelopers] = useState([]);
   const [instructors, setInstructors] = useState([]);
+  const [mentors, setMentors] = useState([]); // New state for mentors
 
   useEffect(() => {
     setDevelopers([
@@ -16,6 +17,9 @@ const Developers = () => {
     setInstructors([
       { id: 1, name: 'Leon'},
       { id: 2, name: 'Thomas'}
+    ]);
+    setMentors([
+      { id: 1, name: 'Louis'} // Adding a mentor named Louis
     ]);
   }, []);
 
@@ -64,6 +68,28 @@ const Developers = () => {
               <PersonIcon />
             </Avatar>
             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{instructor.name}</Typography>
+          </Card>
+        ))}
+
+        {/* New section for Mentors */}
+        <Typography variant="h5" sx={{ mt: 4, mb: 2, color: '#1976d2', fontWeight: 'medium' }}>Undefined</Typography>
+        {mentors.map((mentor) => (
+          <Card key={mentor.id} variant="outlined" sx={{
+            mb: 2,
+            display: 'flex',
+            alignItems: 'center',
+            bgcolor: '#fff',
+            p: 2,
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+            '&:hover': {
+              transform: 'scale(1.03)',
+              boxShadow: 6
+            }
+          }}>
+            <Avatar sx={{ m: 2, bgcolor: 'success.main' }}>
+              <PersonIcon />
+            </Avatar>
+            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{mentor.name}</Typography>
           </Card>
         ))}
       </Box>

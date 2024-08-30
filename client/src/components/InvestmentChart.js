@@ -110,22 +110,21 @@ const InvestmentChart = ({ buyingPower, setBuyingPower }) => {
 
             return (
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="name" 
-                  tickFormatter={(date) => dayjs(date).format('MMM DD')} // Format the date as "Jan 29"
-                  interval="preserveEnd"  // Ensure the interval captures the ends of the range
-                  ticks={chartData.filter((_, index) => index % Math.floor(chartData.length / 7) === 0).map(d => d.name)} // Show approx 8 ticks
-                />
-                <YAxis domain={[yAxisMin - 100, yAxisMax + 100]} tickCount={numTicks + 1} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#8884d8"
-                  dot={false}
-                />
-              </LineChart>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="name"
+                hide // Manually specify the ticks
+              />
+              <YAxis domain={[yAxisMin - 100, yAxisMax + 100]} tickCount={numTicks + 1} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#8884d8"
+                dot={false}
+              />
+            </LineChart>
+
             );
           })()
         ) : (
@@ -137,7 +136,7 @@ const InvestmentChart = ({ buyingPower, setBuyingPower }) => {
         <Typography variant="h5" sx={{ marginBottom: 2 }}>My Account</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h7">Available: ${buyingPower.toFixed(2)}</Typography>
-          <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleOpen} >Transfer Funds</Button>
+          <Button variant="contained" sx={{ bgcolor: '#EE3524', '&:hover': { bgcolor: '#EE3524' } }} onClick={handleOpen} >Transfer Funds</Button>
         </Box>
       </Paper>
 
@@ -183,7 +182,7 @@ const InvestmentChart = ({ buyingPower, setBuyingPower }) => {
               <MenuItem value="Bank of America">Bank of America</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" onClick={handleTransfer} fullWidth sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}}>Confirm Transfer</Button>
+          <Button variant="contained" onClick={handleTransfer} fullWidth sx={{ bgcolor: '#EE3524', '&:hover': { bgcolor: '#EE3524' } }}>Confirm Transfer</Button>
         </DialogContent>
       </Dialog>
     </div>

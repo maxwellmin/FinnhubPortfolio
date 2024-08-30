@@ -192,7 +192,7 @@ const StockPage = ({ onTransactionComplete, buyingPower }) => {
         transaction_type: 'BUY',
         transaction_quantity: parseFloat(amount),
         transaction_price: `${currentPrice}`,
-        asset_type: 'Stock',  // Assuming all buys are stocks for now. Adjust if dynamic.
+        asset_type: 'Stocks',  // Assuming all buys are stocks for now. Adjust if dynamic.
       };
 
       const response = await fetch(`${header}/api/dashboard/transaction`, {
@@ -397,4 +397,3 @@ const StockPage = ({ onTransactionComplete, buyingPower }) => {
 };
 
 export default StockPage;
-
