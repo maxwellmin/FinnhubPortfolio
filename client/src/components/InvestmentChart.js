@@ -138,6 +138,7 @@ const InvestmentChart = ({ buyingPower, setBuyingPower }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h7">Available: ${buyingPower.toFixed(2)}</Typography>
           <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleOpen} >Transfer Funds</Button>
+          <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleOpen} >Transfer Funds</Button>
         </Box>
       </Paper>
 
@@ -183,7 +184,7 @@ const InvestmentChart = ({ buyingPower, setBuyingPower }) => {
               <MenuItem value="Bank of America">Bank of America</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleTransfer} fullWidth>Confirm Transfer</Button>
+          <Button variant="contained" onClick={handleTransfer} fullWidth sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}}>Confirm Transfer</Button>
         </DialogContent>
       </Dialog>
     </div>

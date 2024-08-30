@@ -91,13 +91,13 @@ const Portfolio = () => {
   const getColorForAssetType = (assetType) => {
     switch (assetType) {
       case 'Stocks':
-        return "#519DE9";
+        return "#ed8523";
       case 'ETFs':
-        return "#06C";
+        return "#ee3524";
       case 'Cryptocurrencies':
-        return "#004B95";
+        return "#fdca40";
       default:
-        return "#002F5D";
+        return "#f8f4f0";
     }
   };
 
