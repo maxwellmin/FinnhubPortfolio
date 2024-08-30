@@ -4,12 +4,12 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Responsi
 import axios from 'axios';
 import dayjs from 'dayjs';
 
-const InvestmentChart = () => {
+const InvestmentChart = ({ buyingPower, setBuyingPower }) => {
   // Initialize state with local storage or default value
-  const [buyingPower, setBuyingPower] = useState(() => {
-    const saved = localStorage.getItem('buyingPower');
-    return saved ? parseFloat(saved) : 0;
-  });
+  // const [buyingPower, setBuyingPower] = useState(() => {
+  //   const saved = localStorage.getItem('buyingPower');
+  //   return saved ? parseFloat(saved) : 0;
+  // });
   const [timeframe, setTimeframe] = useState('1D');
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
@@ -18,9 +18,9 @@ const InvestmentChart = () => {
   const [chartData, setChartData] = useState([]);
 
   // Update local storage when buying power changes
-  useEffect(() => {
-    localStorage.setItem('buyingPower', buyingPower);
-  }, [buyingPower]);
+  // useEffect(() => {
+  //   localStorage.setItem('buyingPower', buyingPower);
+  // }, [buyingPower]);
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -82,8 +82,8 @@ const InvestmentChart = () => {
     }
   };
 
-  console.log(`max: ${chartData.max}`);
-  console.log(chartData.min);
+  // console.log(`max: ${chartData.max}`);
+  // console.log(chartData.min);
 
 
   return (
@@ -137,7 +137,7 @@ const InvestmentChart = () => {
         <Typography variant="h5" sx={{ marginBottom: 2 }}>My Account</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h7">Available: ${buyingPower.toFixed(2)}</Typography>
-          <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleTransfer} >Confirm Transfer</Button>
+          <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleOpen} >Transfer Funds</Button>
         </Box>
       </Paper>
 
@@ -183,7 +183,7 @@ const InvestmentChart = () => {
               <MenuItem value="Bank of America">Bank of America</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" onClick={handleTransfer} fullWidth>Confirm Transfer</Button>
+          <Button variant="contained" sx={{bgcolor:'#EE3524', '&:hover': {bgcolor:'#EE3524'}}} onClick={handleTransfer} fullWidth>Confirm Transfer</Button>
         </DialogContent>
       </Dialog>
     </div>

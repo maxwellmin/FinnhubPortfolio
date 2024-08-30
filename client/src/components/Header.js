@@ -205,7 +205,7 @@ const Header = ({ darkMode, toggleDarkMode }) => {
               <MenuItem
                 onClick={() => navigate('/careers')}
                 sx={{
-                  color: 'white',
+                  color: 'secondary.light',
                   '&:hover': {
                     backgroundColor: 'transparent',
                     color: darkMode ? 'white' : 'black',
@@ -215,9 +215,21 @@ const Header = ({ darkMode, toggleDarkMode }) => {
                 Careers
               </MenuItem>
               <MenuItem
+                onClick={() => navigate('/referral')}
+                sx={{
+                  color: 'secondary.light',
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                    color: darkMode ? 'white' : 'black',
+                  },
+                }}
+              >
+                Referral
+              </MenuItem>
+              <MenuItem
                 onClick={() => navigate('/developers')}
                 sx={{
-                  color: 'white',
+                  color: 'secondary.light',
                   '&:hover': {
                     backgroundColor: 'transparent',
                     color: darkMode ? 'white' : 'black',

@@ -11,13 +11,18 @@ import Login from './components/Login';
 import History from './components/History';
 import Careers from './components/careers';
 import Contact from './components/contactUs';
+import Referral from './components/referral';
 import Developers from './components/Developers';
 
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [investmentItems, setInvestmentItems] = useState([]);
-  const [buyingPower, setBuyingPower] = useState(0.02);
+  const [buyingPower, setBuyingPower] = useState(() => {
+    // Retrieve buyingPower from local storage or default to 0 if not available
+    const saved = localStorage.getItem('buyingPower');
+    return saved ? parseFloat(saved) : 0;
+  });
   const [timeRange, setTimeRange] = useState('1D');
   const balanceData = {
     total: '246.03',
@@ -28,8 +33,9 @@ function App() {
 
   useEffect(() => {
     fetchPortfolioData();
-  }, []);
-
+    // Update local storage whenever buyingPower changes
+    localStorage.setItem('buyingPower', buyingPower);
+  }, [buyingPower]);
   const fetchPortfolioData = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/dashboard/portfolio');
@@ -100,7 +106,7 @@ function App() {
                     }}
                   >
                     <BalanceDisplay total={balanceData.total} todayChange={balanceData.todayChange} />
-                    <InvestmentChart data={chartData} />
+                    <InvestmentChart data={chartData} buyingPower={buyingPower} setBuyingPower={setBuyingPower}/>
                   </Box>
                 </Grid>
                 <Grid item xs={3}>
@@ -120,12 +126,13 @@ function App() {
                 </Grid>
               </Grid>
             }/>
-            <Route path="/stock/:symbol" element={<StockPage onTransactionComplete={handleTransactionComplete} />} />
+            <Route path="/stock/:symbol" element={<StockPage onTransactionComplete={handleTransactionComplete} buyingPower={buyingPower} />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/history" element={<History />} />
             <Route path="/login" element={<Login />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/referral" element={<Referral />} />
             <Route path="/developers" element={<Developers />} />
           </Routes>
         </Box>

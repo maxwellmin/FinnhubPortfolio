@@ -9,7 +9,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 const header = 'http://localhost:3000'
 
-const StockPage = ({ onTransactionComplete }) => {
+const StockPage = ({ onTransactionComplete, buyingPower }) => {
   const { symbol } = useParams();
   const [stockData, setStockData] = useState([]);
   const [timeframe, setTimeframe] = useState('1D');
@@ -288,10 +288,7 @@ const StockPage = ({ onTransactionComplete }) => {
       )}
 
 
-
-
-      {/* Timeframe Selector */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-around', marginY: 3 }}>
+      {/* <Box sx={{ display: 'flex', justifyContent: 'space-around', marginY: 3 }}>
         {['LIVE', '1D', '1W', '1M', '3M', '1Y', '5Y'].map((tf) => (
           <Button
             key={tf}
@@ -301,7 +298,7 @@ const StockPage = ({ onTransactionComplete }) => {
             {tf}
           </Button>
         ))}
-      </Box>
+      </Box> */}
 
       {/* Equity and Portfolio Information */}
       <Grid container spacing={2} sx={{ marginTop: 4 }}>
@@ -353,8 +350,8 @@ const StockPage = ({ onTransactionComplete }) => {
                     Buy
                   </Button>
 
-                  <Typography sx={{ marginTop: 2 }}>Available: $0.02</Typography>
-
+                  <Typography sx={{ marginTop: 2 }}>Available: ${buyingPower.toFixed(2)}</Typography>
+                  
                   <Button
                     fullWidth
                     sx={{ border: '1px solid #EE3524', color: '#EE3524', marginTop: 2 }}
